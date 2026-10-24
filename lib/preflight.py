@@ -186,6 +186,46 @@ def _filter_problems(sub, name, cols, rows, filters, produced):
     return out
 
 
+def _model_pmods(model_file):
+    """[(trial_type of the modulated condition, [modulator columns])] of the Run nodes (condition 'valid_item.item' -> 'item')."""
+    out = []
+    try:
+        model = json.loads(Path(model_file).read_text()) if model_file else {}
+        for node in model.get("Nodes") or []:
+            if node.get("Level") != "Run":
+                continue
+            spm = (((node.get("Model") or {}).get("Software") or {}).get("SPM") or {})
+            for pm in spm.get("ParametricModulations") or []:
+                columns = [v for v in pm.get("Values") or [] if isinstance(v, str)]
+                for cond in pm.get("Conditions") or []:
+                    if isinstance(cond, str) and columns:
+                        out.append((cond.split(".", 1)[-1], columns))
+    except (OSError, ValueError, AttributeError, TypeError, RecursionError):
+        return []
+    return out
+
+
+def _pmod_problems(sub, name, cols, rows, pmods, filters):
+    """bidspm reads n/a in a modulator column as 1 (convertOnsetTsvToMat.m), silently: stop on modelled trials with n/a there.
+    The modelled rows are the condition's trial_type rows that pass the model's ==/~= Filters; any other Filter -> not checked."""
+    out = []
+    if not pmods or "trial_type" not in cols or any(op not in ("==", "~=") or c not in cols for c, op, _ in filters):
+        return out
+    for tail, columns in pmods:
+        modelled = [r for r in rows if r.get("trial_type") == tail
+                    and all((r.get(c) == v) == (op == "==") for c, op, v in filters)]
+        for column in columns:
+            if column not in cols:
+                continue
+            bad = sum((r.get(column) or "").strip() in NA_VALUES for r in modelled)
+            if bad:
+                out.append(_item("pmod_value", ERROR,
+                                 f"sub-{sub}: {name} has n/a in {column} on {bad} of {len(modelled)} modelled {tail} trials; "
+                                 "bidspm would silently use 1 there",
+                                 f"Exclude the subject, or give those trials a {column} value (or filter them out in the model).", sub))
+    return out
+
+
 def _numeric(v):
     try:
         float(v)
@@ -331,7 +371,8 @@ def _events_files(bids_dir, bids_listing, task):
     return _match(bids_listing, f"*task-{task}_*events.tsv") or sorted(Path(bids_dir).glob(f"task-{task}_events.tsv"))
 
 
-def check_subject_task(bids_dir, fmriprep_dir, sub, task, space, needs, full=True, listings=None, filters=(), inputs=None):
+def check_subject_task(bids_dir, fmriprep_dir, sub, task, space, needs, full=True, listings=None, filters=(), inputs=None,
+                       pmods=()):
     """Returns (items, trial_type values seen in this subject's events files, events files).
 
     listings: optional (bids, fmriprep) _func_listing results, so callers walk each subject tree once.
@@ -371,7 +412,8 @@ def check_subject_task(bids_dir, fmriprep_dir, sub, task, space, needs, full=Tru
                              "Rename or remove the repeated column; each column name may appear once.", sub))
             events_ok = False
         problems = _events_problems(sub, path.name, cols, rows)
-        out += problems + _filter_problems(sub, path.name, cols, rows, filters, produced)
+        out += problems + _filter_problems(sub, path.name, cols, rows, filters, produced) \
+            + _pmod_problems(sub, path.name, cols, rows, pmods, filters)
         events_ok = events_ok and all(p["severity"] != ERROR for p in problems)
         if conditions and not transformed:
             if "trial_type" not in cols:
@@ -727,6 +769,7 @@ def _subject_checks(bids_dir, fmriprep_dir, model_file, tasks, space, subjects, 
     needs = _model_needs(model_file)
     conditions, _, transformed, _ = needs
     filters = _model_filters(model_file) if full else []
+    pmods = _model_pmods(model_file) if full else []
     needed = _dataset_contrasts(model_file) if model_file else set()
     inputs = model_input(model_file)
     listings = {}  # one directory walk per subject and root, shared by all tasks
@@ -741,7 +784,7 @@ def _subject_checks(bids_dir, fmriprep_dir, model_file, tasks, space, subjects, 
                 if sub not in listings:
                     listings[sub] = (_func_listing(bids_dir, sub), _func_listing(fmriprep_dir, sub))
                 items, seen, events = check_subject_task(bids_dir, fmriprep_dir, sub, task, space, needs, full, listings[sub], filters,
-                                                         inputs)
+                                                         inputs, pmods)
                 in_model = [p for p in listings[sub][1] if run_selected(p, inputs)]
                 items += _output_problems(fmriprep_dir, derivatives_dir, sub, task, space, fwhm, in_model, actions, needed)
                 if quote_reported:  # ONE quote warning per run, not one per subject
