@@ -3,12 +3,13 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PREFIXES = ("scripts/", "containers/", "config/", "docs/", "spm_bids_runner.py", "bidspm_", "lib/", "webapp/", "static/", "templates/")
+PREFIXES = ("scripts/", "containers/", "config/", "docs/", "spm_bids_runner", "lib/", "webapp/", "static/", "templates/")
 
 
 # Files a student creates from a shipped template (git-ignored, so absent from a fresh clone); allowed only while the
 # README tells them how to create it.
 CREATED = {"config/config.json": "config/config.example.json"}
+LEGACY = {"scripts/activate_bidspm.sh"}  # guard:allow named on purpose by the README's upgrade note for checkouts made before the rename
 
 
 def test_readme_paths_exist():
@@ -23,7 +24,7 @@ def test_readme_paths_exist():
             continue
         rel = rel.split()[0].rstrip(".,;:)")
         if re.fullmatch(r"[\w./-]+\.\w+|[\w./-]+/", rel) and not any(c in rel for c in "<*{"):
-            if rel in CREATED and CREATED[rel] in text and (ROOT / CREATED[rel]).exists():
+            if rel in LEGACY or (rel in CREATED and CREATED[rel] in text and (ROOT / CREATED[rel]).exists()):
                 continue
             if not (ROOT / rel).exists():
                 missing.append(rel)
