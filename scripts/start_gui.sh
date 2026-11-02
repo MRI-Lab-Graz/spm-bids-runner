@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start the BIDSPM web GUI inside the project's virtual environment.
+# Start the SPM BIDS Runner web GUI inside the project's virtual environment.
 #   ./scripts/start_gui.sh [spm_bids_runner_gui.py options]      e.g. --host 0.0.0.0, --no-browser
 # Port: $SPM_BIDS_RUNNER_PORT (default 5100). Venv: $SPM_BIDS_RUNNER_VENV (default <repo>/.venv).
 # Over VS Code Remote SSH the browser is opened by VS Code's port forwarding (see README); on a desktop

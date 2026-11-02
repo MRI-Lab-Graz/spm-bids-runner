@@ -1,5 +1,5 @@
 """
-Project Manager for BIDSPM
+Project Manager for SPM BIDS Runner
 
 Manages projects with persistent storage, similar to bids_apps_runner.
 Each project has its own folder with:
@@ -118,7 +118,7 @@ class ProjectConfig:
 
 @dataclass
 class Project:
-    """A BIDSPM project."""
+    """An SPM BIDS Runner project."""
     id: str
     name: str
     description: str = ""
@@ -152,7 +152,7 @@ class Project:
 
 class ProjectManager:
     """
-    Manage BIDSPM projects.
+    Manage SPM BIDS Runner projects.
     
     Projects are stored in ~/.spm-bids-runner/projects/<project_id>/
     Each project directory contains:

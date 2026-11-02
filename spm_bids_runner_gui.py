@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-BIDSPM Web Interface - Visual/API Layer Only
+SPM BIDS Runner Web Interface - Visual/API Layer Only
 
-This module provides the Flask web interface for BIDSPM.
+This module provides the Flask web interface for SPM BIDS Runner.
 All business logic is delegated to lib/core.py to avoid code duplication.
 
 The web interface handles:
@@ -351,7 +351,7 @@ def kill_existing_on_port(port: int) -> bool:
         command = _command_of(pid)
         if 'spm_bids_runner_gui.py' not in command:
             print(f"Error: port {port} is held by PID {pid} ({command or 'unknown command'}), which is not a "
-                  f"bidspm GUI, so it was not stopped. Pick another port: --port N (start_gui.sh: SPM_BIDS_RUNNER_PORT=N).")
+                  f"SPM BIDS Runner GUI, so it was not stopped. Pick another port: --port N (start_gui.sh: SPM_BIDS_RUNNER_PORT=N).")
             sys.exit(1)
         try:
             os.kill(pid, signal.SIGTERM)
@@ -522,9 +522,9 @@ def shutdown():
 
 def parse_gui_args(argv=None):
     import argparse
-    parser = argparse.ArgumentParser(description='BIDSPM Web Interface')
+    parser = argparse.ArgumentParser(description='SPM BIDS Runner Web Interface')
     parser.add_argument('-p', '--port', type=int, default=None,
-                       help='Port to use (default: 5100; an older bidspm GUI on that port is stopped first, any other program is left alone)')
+                       help='Port to use (default: 5100; an older SPM BIDS Runner GUI on that port is stopped first, any other program is left alone)')
     parser.add_argument('--host', default='127.0.0.1',
                        help='Address to listen on (default: 127.0.0.1, this machine only). The interface has no login: '
                             'on a remote server keep the default and use "ssh -L <port>:localhost:<port>"; '

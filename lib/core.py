@@ -1,5 +1,5 @@
 """
-Core BIDSPM business logic - shared between CLI and web interface.
+Core SPM BIDS Runner business logic - shared between CLI and web interface.
 
 This module contains all pipeline logic to avoid code duplication.
 The web interface should only handle visual/API concerns, not execution logic.
@@ -1053,7 +1053,7 @@ class PipelineResult:
 
 class Pipeline:
     """
-    Main pipeline executor - handles all BIDSPM operations.
+    Main pipeline executor - handles all SPM BIDS Runner operations.
     
     This class contains all execution logic, shared between CLI and web interface.
     """

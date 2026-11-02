@@ -13,7 +13,7 @@ source "$PROJECT_ROOT/.venv/bin/activate"
 
 export SPM_BIDS_RUNNER_PROJECT_ROOT="$PROJECT_ROOT"
 
-echo "🚀 BIDSPM environment activated!"
+echo "🚀 SPM BIDS Runner environment activated!"
 echo "Project root: $PROJECT_ROOT"
 echo "Python path: $(which python)"
 

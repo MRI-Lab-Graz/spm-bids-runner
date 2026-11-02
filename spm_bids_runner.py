@@ -32,7 +32,7 @@ def show_help():
 
 DESCRIPTION:
     A Python wrapper for running BIDS-StatsModel statistical pipelines using
-    containerized BIDSPM (Docker or Apptainer). This tool manages the entire
+    containerized bidspm (Docker or Apptainer). This tool manages the entire
     pipeline from smoothing preprocessed data to running statistical analyses.
 
 USAGE:

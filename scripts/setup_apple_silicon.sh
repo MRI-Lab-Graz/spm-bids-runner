@@ -1,12 +1,12 @@
 #!/bin/bash
-# setup_apple_silicon.sh — BIDSPM installer for Apple Silicon Macs (M1/M2/M3/M4)
+# setup_apple_silicon.sh — SPM BIDS Runner installer for Apple Silicon Macs (M1/M2/M3/M4)
 #
 # Share this single file with students. Running it once sets up everything.
 # Analyses run inside the same Docker container as the server — identical results.
 #
 # Usage:
 #   bash setup_apple_silicon.sh              # installs to ~/spm-bids-runner
-#   bash setup_apple_silicon.sh --dir ~/Desktop/bidspm
+#   bash setup_apple_silicon.sh --dir ~/Desktop/spm-bids-runner
 #
 # What this script does:
 #   1. Verifies Apple Silicon + macOS
@@ -15,7 +15,7 @@
 #   4. Clones the repository with all submodules
 #   5. Installs UV and creates a Python virtual environment
 #   6. Installs all Python dependencies
-#   7. Checks Docker Desktop and pulls the bidspm image
+#   7. Checks Docker Desktop and pulls the spm-bids-runner image
 #   8. Writes scripts/activate.sh for daily use
 
 set -euo pipefail
@@ -50,7 +50,7 @@ done
 # ---------------------------------------------------------------------------
 if [[ "$INSTALL_DIR_SET" == false ]]; then
     echo ""
-    echo "  Where should BIDSPM be installed?"
+    echo "  Where should SPM BIDS Runner be installed?"
     echo "  Press Enter to accept the default, or type a different path."
     echo ""
     read -r -p "  Install directory [${INSTALL_DIR}]: " _USER_DIR
@@ -159,13 +159,13 @@ if [[ -d ".venv" ]]; then
     warn "Existing .venv environment found — recreating."
     rm -rf .venv
 fi
-UV_PROJECT_ENVIRONMENT=.venv "$UV_BIN" sync --managed-python || error "uv sync failed — run this script from the repo root."
+"$UV_BIN" sync --managed-python || error "uv sync failed — run this script from the repo root."
 success "Virtual environment and Python dependencies installed"
 
 # ---------------------------------------------------------------------------
 # Step 7 — Docker Desktop + image pull
 # ---------------------------------------------------------------------------
-step "7/8  Checking Docker Desktop and pulling bidspm image"
+step "7/8  Checking Docker Desktop and pulling spm-bids-runner image"
 
 if ! command -v docker &>/dev/null; then
     echo ""
@@ -175,14 +175,14 @@ if ! command -v docker &>/dev/null; then
     echo "    https://www.docker.com/products/docker-desktop/"
     echo ""
     echo "  After installing and launching Docker Desktop, rerun this script"
-    echo "  to pull the bidspm image."
+    echo "  to pull the spm-bids-runner image."
     echo ""
     warn "Skipping image pull — complete Docker setup and rerun."
 elif ! docker info &>/dev/null 2>&1; then
     echo ""
     warn "Docker is installed but not running."
     echo "  Please open Docker Desktop, wait for it to finish starting,"
-    echo "  then rerun this script to pull the bidspm image."
+    echo "  then rerun this script to pull the spm-bids-runner image."
     echo ""
 else
     success "Docker Desktop is running"
@@ -212,7 +212,7 @@ mkdir -p scripts
 
 cat > scripts/activate.sh << 'ACTIVATE_EOF'
 #!/bin/bash
-# Activate the BIDSPM environment on Apple Silicon Mac.
+# Activate the SPM BIDS Runner environment on Apple Silicon Mac.
 # Usage:  source .venv/bin/activate
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -229,7 +229,7 @@ source "$PROJECT_ROOT/.venv/bin/activate"
 export SPM_BIDS_RUNNER_PROJECT_ROOT="$PROJECT_ROOT"
 
 echo ""
-echo "BIDSPM environment activated"
+echo "SPM BIDS Runner environment activated"
 echo "  Project : $PROJECT_ROOT"
 echo "  Python  : $(which python)"
 echo "  Docker  : $(docker --version 2>/dev/null | head -1 || echo 'not found')"
@@ -248,7 +248,7 @@ success "scripts/activate.sh written"
 # ---------------------------------------------------------------------------
 echo ""
 echo -e "${BOLD}══════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}${BOLD}  BIDSPM setup complete!${NC}"
+echo -e "${GREEN}${BOLD}  SPM BIDS Runner setup complete!${NC}"
 echo -e "${BOLD}══════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  Installation path : ${BOLD}${INSTALL_DIR}${NC}"

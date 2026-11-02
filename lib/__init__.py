@@ -1,6 +1,6 @@
-# bidspm library modules
+# SPM BIDS Runner library modules
 """
-BIDSPM Library - Core functionality for BIDS-StatsModel pipelines.
+SPM BIDS Runner Library - Core functionality for BIDS-StatsModel pipelines.
 
 Modules:
     - config: Configuration loading and management

@@ -6,6 +6,8 @@ A Python-based tool for running BIDS-StatsModel pipelines via containers (Docker
 
 SPM BIDS Runner enables neuroimaging data analysis using the bidspm framework by leveraging containerized environments. The tool supports both Docker and Apptainer and can automatically perform smoothing and statistical analyses on BIDS-compliant datasets.
 
+Built on [bidspm](https://github.com/cpp-lln-lab/bidspm) (CPP Lab), SPM and GNU Octave; we patched bidspm and added a runner and a GUI. Formerly named "bidspm" in this repository.
+
 **New here? Follow the [student walkthrough](docs/walkthrough.md)** (install, wizard, readiness check, run, results, with screenshots).
 
 ## Features
@@ -113,6 +115,10 @@ Which one a run uses: a `--container` file wins; otherwise the `container_type` 
 
 ## Installation
 
+**Upgrading from an older checkout** (this repo was renamed `spm-bids-runner`): `git pull`, then
+`./scripts/setup.sh --force` (the environment is now `.venv`). Your saved projects move to `~/.spm-bids-runner`
+automatically the first time the program starts.
+
 ### Install and start (Docker or Apptainer)
 
 This repo is a Python CLI/webapp that drives a Docker (or Apptainer)
@@ -140,10 +146,10 @@ installed on the system is not used).
 
 The environment is managed entirely by [uv](https://docs.astral.sh/uv/): dependencies live in `pyproject.toml` and are
 locked in `uv.lock`. It uses uv's own Python, never the OS's or FSL's. To change dependencies edit `pyproject.toml`, run
-`uv lock`, then `UV_PROJECT_ENVIRONMENT=.venv uv sync --managed-python`.
+`uv lock`, then `uv sync --managed-python`.
 
 **Starting the GUI:** `./scripts/start_gui.sh` activates the project's `.venv` virtual environment and starts it
-(port `$SPM_BIDS_RUNNER_PORT`, default 5100; any options such as `--host` or `--no-browser` are passed on). If an older bidspm GUI
+(port `$SPM_BIDS_RUNNER_PORT`, default 5100; any options such as `--host` or `--no-browser` are passed on). If an older SPM BIDS Runner GUI
 already listens on that port it is stopped and replaced; any other program on the port is left alone and the script exits
 with its PID (choose another port: `SPM_BIDS_RUNNER_PORT=5101 ./scripts/start_gui.sh`). On start the GUI prints a "Pre-flight check"
 (a list of what is ready or missing); the same check runs on demand with `python spm_bids_runner.py --check-environment`.
@@ -153,7 +159,7 @@ On a shared server each student runs their own instance on their own port.
 
 **VS Code Remote SSH:** VS Code shows "Your application running on port 5100 is available. Open in Browser" every time.
 To open the browser at once instead, add this to the (untracked) `.vscode/settings.json`:
-`"remote.portsAttributes": {"5100": {"label": "BIDSPM GUI", "onAutoForward": "openBrowser"}}`.
+`"remote.portsAttributes": {"5100": {"label": "SPM BIDS Runner GUI", "onAutoForward": "openBrowser"}}`.
 
 **On a remote server without a display:** the web GUI starts without opening a browser when it detects an SSH session
 (or with `--no-browser`). It listens on `127.0.0.1` only, because it has no login (anyone who can reach the port can run
@@ -178,7 +184,7 @@ touching the venv, via `SPM_BIDS_RUNNER_PYTHON=/path/to/python python spm_bids_r
 ### Manual installation (instead of `scripts/setup.sh`)
 
 ```bash
-UV_PROJECT_ENVIRONMENT=.venv uv sync --managed-python   # needs uv (https://docs.astral.sh/uv/)
+uv sync --managed-python   # needs uv (https://docs.astral.sh/uv/)
 source .venv/bin/activate
 ```
 
@@ -202,7 +208,7 @@ Notes:
 
 ## Readiness check (preflight)
 
-Before a run, bidspm can check whether the BIDS dataset, the fMRIPrep output and the model fit together. It checks:
+Before a run, SPM BIDS Runner can check whether the BIDS dataset, the fMRIPrep output and the model fit together. It checks:
 
 - BIDS and fMRIPrep folders exist, have `dataset_description.json` and `sub-*` folders (`bids_dir`, `fmriprep_dir`)
 - selected subjects exist in both trees (`subject_missing`); tasks are found (`no_tasks`)

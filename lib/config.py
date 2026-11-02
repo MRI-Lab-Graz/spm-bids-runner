@@ -1,4 +1,4 @@
-"""Configuration management for bidspm."""
+"""Configuration management for SPM BIDS Runner."""
 
 import json
 import platform

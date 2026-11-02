@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         -h|--help)
-            echo "BIDSPM Unified Setup Script"
+            echo "SPM BIDS Runner Unified Setup Script"
             echo "=========================="
             echo ""
             echo "Usage: $0 [OPTIONS]"
@@ -85,7 +85,7 @@ print_error() {
 
 # Check if running on Ubuntu/Debian
 check_os() {
-    print_status "Setting up BIDSPM environment..."
+    print_status "Setting up SPM BIDS Runner environment..."
     print_success "Cross-platform setup (no sudo required)"
 }
 
@@ -263,7 +263,7 @@ create_venv() {
 
     # main() runs inside `if main "$@"; then`, which suspends `set -e` for its entire call tree --
     # check the exit status explicitly or a failed install is silently ignored.
-    if ! UV_PROJECT_ENVIRONMENT=.venv ./build/uv sync --managed-python; then
+    if ! ./build/uv sync --managed-python; then
         print_error "uv sync failed (Python download or package install)"
         exit 1
     fi
@@ -297,7 +297,7 @@ source "$PROJECT_ROOT/.venv/bin/activate"
 
 export SPM_BIDS_RUNNER_PROJECT_ROOT="$PROJECT_ROOT"
 
-echo "🚀 BIDSPM environment activated!"
+echo "🚀 SPM BIDS Runner environment activated!"
 echo "Project root: $PROJECT_ROOT"
 echo "Python path: $(which python)"
 EOF
@@ -329,7 +329,7 @@ EOF
 # Main setup function
 main() {
     echo "========================================"
-    echo "     BIDSPM Container Setup"
+    echo "     SPM BIDS Runner Container Setup"
     echo "========================================"
     echo ""
 

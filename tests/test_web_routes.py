@@ -52,7 +52,7 @@ class TestWebRoutes(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         text = response.get_data(as_text=True)
-        self.assertIn("Manage your BIDSPM analysis projects", text)
+        self.assertIn("Manage your SPM BIDS Runner analysis projects", text)
         self.assertIn("No Projects Yet", text)
 
     def test_footer_github_link_points_at_the_real_repository(self):
