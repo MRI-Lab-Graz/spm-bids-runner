@@ -380,7 +380,7 @@
                         <div class="mt-2" id="spm-standalone-options">
                             <label class="form-label x-small fw-bold text-muted text-uppercase mb-0" for="estimation_engine">Model estimation engine</label>
                             <select class="form-select form-select-sm mb-1" id="estimation_engine" name="estimation_engine">
-                                <option value="octave" selected>Octave (all in the bidspm image)</option>
+                                <option value="octave" selected>Octave (all in the spm-bids-runner image)</option>
                                 <option value="standalone">SPM standalone (MATLAB Runtime): faster on long scans</option>
                             </select>
                             <label class="form-label x-small fw-bold text-muted text-uppercase mb-0" for="input-spm_standalone_image">SPM standalone image (you provide it)</label>
@@ -444,7 +444,7 @@
                     <span class="badge bg-secondary" id="exec-status">IDLE</span>
                 </div>
                 <div class="card-body p-0 bg-black" style="min-height: 500px;">
-                    <div id="terminal" class="p-3 text-light font-monospace small" style="height: 600px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">Welcome to BIDSPM Web Interface.
+                    <div id="terminal" class="p-3 text-light font-monospace small" style="height: 600px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">Welcome to the SPM BIDS Runner web interface.
 {% if project %}Project: {{ project.name }}
 {% endif %}Ready for command.</div>
                     <div id="run-failure-summary" class="mt-2 d-none px-3 pb-2">

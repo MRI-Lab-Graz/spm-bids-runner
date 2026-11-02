@@ -10,14 +10,14 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VENV="${SPM_BIDS_RUNNER_VENV:-$ROOT/.venv}"
 
 if [ ! -f "$VENV/bin/activate" ]; then
-    echo "❌ Virtual environment not found at $VENV. Run ./scripts/setup.sh first." >&2
+    echo "❌ Virtual environment not found at $VENV. Run ./scripts/setup.sh --force first." >&2
     exit 1
 fi
 
 # A venv whose interpreter is missing or dangling (e.g. it was built from a Python that has since moved) would
 # silently fall through to whatever `python` comes first on PATH. Refuse it instead.
 if ! "$VENV/bin/python" -c "import sys" 2>/dev/null; then
-    echo "❌ $VENV/bin/python does not work (missing or dangling). Run ./scripts/setup.sh to rebuild the venv." >&2
+    echo "❌ $VENV/bin/python does not work (missing or dangling). Run ./scripts/setup.sh --force to rebuild the venv." >&2
     exit 1
 fi
 

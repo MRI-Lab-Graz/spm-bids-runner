@@ -8,7 +8,7 @@ NEW_NAME = ".spm-bids-runner"
 
 
 def migrate_legacy_data_dir(home: Path) -> bool:
-    """Move <home>/.bidspm to <home>/.spm-bids-runner once. Saved project files hold absolute paths into the folder,
+    """Move <home>/.bidspm to <home>/.spm-bids-runner once. Saved project files may hold absolute paths into the folder,
     so every *.json below it gets the old folder path replaced by the new one. Never merges or overwrites: if the new
     folder exists nothing happens. Returns True when it moved.
     ponytail: a crash between the move and the rewrite leaves stale paths in some project files; rerun is not

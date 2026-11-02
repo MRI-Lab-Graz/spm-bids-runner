@@ -142,7 +142,7 @@ def parse_arguments():
                        help='Name of the BIDS model node to run')
     parser.add_argument('--estimation-engine', choices=['octave', 'standalone'], default='octave',
                        dest='estimation_engine',
-                       help="Where subject-level model estimation runs: 'octave' (default, all in the bidspm image) "
+                       help="Where subject-level model estimation runs: 'octave' (default, all in the spm-bids-runner image) "
                             "or 'standalone' (SPM's compiled standalone from an image you supply via "
                             "spm_standalone_image in the container config; much faster on long scans)")
     parser.add_argument('--results', action='store_true', dest='run_results',

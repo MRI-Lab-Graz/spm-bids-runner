@@ -30,7 +30,7 @@ Built on [bidspm](https://github.com/cpp-lln-lab/bidspm) (CPP Lab), SPM and GNU 
 - `spm_bids_runner.py` – primary entry point for all container workflows
 - `bidspm_overrides/` – locally-patched upstream bidspm files, baked into the Docker
   image at build time (see `bidspm_overrides/README.md` for what's patched and why)
-- `containers/dockerfile/` – the Dockerfile and build scripts for the bidspm image
+- `containers/dockerfile/` – the Dockerfile and build scripts for the spm-bids-runner image
 - `lib/spm_standalone.py` – optional estimation in SPM's compiled standalone (see below)
 - `scripts/` – helper utilities (environment activation, setup, wrapper scripts); `scripts/check_run_log.py` fails on any unexpected error or warning in a run log
 - `logs/` – auto-generated run logs (e.g., `run_spm_bids_runner.log`, `model_*_timestamp.log`)
@@ -115,9 +115,15 @@ Which one a run uses: a `--container` file wins; otherwise the `container_type` 
 
 ## Installation
 
-**Upgrading from an older checkout** (this repo was renamed `spm-bids-runner`): `git pull`, then
-`./scripts/setup.sh --force` (the environment is now `.venv`). Your saved projects move to `~/.spm-bids-runner`
-automatically the first time the program starts.
+**Upgrading from an older checkout** (this repo was renamed `spm-bids-runner`), in this order:
+
+1. Stop a running GUI first (`kill <pid>`; the old process is `bidspm_gui.py`). Otherwise its later saves recreate the old data folder and are not migrated. <!-- guard:allow -->
+2. `git pull`. If git complains that local changes to `scripts/activate_bidspm.sh` would be overwritten, run `git checkout -- scripts/activate_bidspm.sh` and pull again (setup regenerates the activate script). <!-- guard:allow -->
+3. `./scripts/setup.sh --force` (the environment is now `.venv`; a plain run does nothing because of the install lock).
+4. `rm -rf .bidspm` (the old environment, about 0.7 GB, is no longer used). <!-- guard:allow -->
+5. Your saved projects move to `~/.spm-bids-runner` automatically the first time the program starts.
+
+Mac students (`scripts/setup_apple_silicon.sh`): an old install lives in `~/bidspm`. Either run the script with `--dir ~/bidspm` to update it, or delete it after the new install in `~/spm-bids-runner` works. <!-- guard:allow -->
 
 ### Install and start (Docker or Apptainer)
 

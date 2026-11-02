@@ -38,8 +38,9 @@ We did not invent bidspm; we patched it and built a GUI and runner around it. Ca
 ## Data folder migration
 
 `~/.bidspm/` holds `projects/`, `logs/` and `current_project.json` (`lib/project_manager.py:26`, `lib/utils.py:18`). Saved
-project JSON files contain **absolute paths into that folder** (about 25 occurrences in the two existing projects:
-`<home>/.bidspm/projects/proj_.../...`), so moving the folder alone would leave them stale.
+project JSON files may contain **absolute paths into that folder** (`<home>/.bidspm/projects/proj_.../...`), so moving
+the folder alone would leave them stale. In the maintainer's real data those paths were only in historical `.log` files
+and in no JSON; the rewrite stays as a cheap safeguard for projects that do store such paths.
 
 On GUI/CLI start, if `~/.bidspm` exists and `~/.spm-bids-runner` does not:
 

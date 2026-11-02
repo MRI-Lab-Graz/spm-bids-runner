@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `bidspm_config_${projectId}.json`;
+                a.download = `spm_bids_runner_config_${projectId}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

@@ -3,6 +3,7 @@
 Fails when a tracked (or new, unignored) file still uses an old name of ours. Upstream names are not listed
 here, so they pass: the bidspm command, bidspm-preproc/, bidspm-stats/, Model.Software.bidspm, bidspm_overrides/,
 the container-side BIDSPM_* variables, cpp-lln-lab/bidspm.
+A line containing the marker `guard:allow` is skipped (the README upgrade note has to name the old things).
 """
 import re
 import subprocess
@@ -21,6 +22,9 @@ OLD_NAMES = [
     ("old activate script", r"activate_bidspm"),
     ("old localStorage key", r"bidspm_validator_mode_"),
     ("old repo URL", r"MRI-Lab-Graz/bidspm\b"),
+    ("old UI text", r"Welcome to BIDSPM|all in the bidspm image"),
+    ("old export file name", r"bidspm_config_"),
+    ("old report title", r"\bbidspm (processing |group )?report\b(?! templates)"),
     ("old checkout folder", r"\bcd bidspm\b|\$\{HOME\}/bidspm\b|~/bidspm\b"),
 ]
 OLD_PATHS = re.compile(r"(^|/)(bidspm\.py|bidspm_gui\.py|activate_bidspm\.sh|test_bidspm_\w+\.py)$")
@@ -47,6 +51,8 @@ def test_no_old_names_in_file_contents():
         except UnicodeDecodeError:
             continue  # binary (png, woff2)
         for n, line in enumerate(lines, 1):
+            if "guard:allow" in line:
+                continue
             hits += [f"{f}:{n}: [{label}] {line.strip()[:90]}" for label, rx in compiled if rx.search(line)]
     assert not hits, f"{len(hits)} old names:\n" + "\n".join(hits[:60])
 

@@ -122,6 +122,7 @@ step "4/8  Cloning repository → ${INSTALL_DIR}"
 
 if [[ -d "${INSTALL_DIR}/.git" ]]; then
     warn "Repository already exists — pulling latest changes..."
+    git -C "$INSTALL_DIR" checkout -- 'scripts/activate*.sh' 2>/dev/null || true  # regenerated later
     git -C "$INSTALL_DIR" pull --ff-only
     git -C "$INSTALL_DIR" submodule update --init --recursive
 else
