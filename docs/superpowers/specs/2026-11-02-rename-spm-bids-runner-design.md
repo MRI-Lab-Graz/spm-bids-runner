@@ -19,7 +19,7 @@ We did not invent bidspm; we patched it and built a GUI and runner around it. Ca
 | `bidspm.py`, `bidspm_gui.py` | `spm_bids_runner.py`, `spm_bids_runner_gui.py` |
 | "BIDSPM Runner" (GUI title, README, templates, messages) | "SPM BIDS Runner" |
 | `pyproject.toml` name `bidspm-runner` | `spm-bids-runner` |
-| `BIDSPM_*` env vars of ours (`PORT`, `VENV`, `PYTHON`, `SKIP_RESULTS`, `TEST_IMAGE`, `TRANSFORMER_CONTEXT`, `WIZARD_CONTEXT`) | `SPM_BIDS_RUNNER_*` |
+| `BIDSPM_*` env vars of ours on the host (`PORT`, `VENV`, `PYTHON`, `TEST_IMAGE`, `PROJECT_ROOT`, `WIZARD_CONTEXT`, `TRANSFORMER_CONTEXT`) | `SPM_BIDS_RUNNER_*` |
 | venv `.bidspm` (+ `UV_PROJECT_ENVIRONMENT=.bidspm`) | uv's default `.venv`; `setup.sh`, `start_gui.sh`, `activate_bidspm.sh`, README, tests follow |
 | `scripts/activate_bidspm.sh` | `scripts/activate.sh` |
 | user data folder `~/.bidspm` (projects, logs) | `~/.spm-bids-runner` (migration below) |
@@ -33,6 +33,7 @@ We did not invent bidspm; we patched it and built a GUI and runner around it. Ca
 - `LICENSE`, the image NOTICE, `docs/third-party-licenses.md`, the Acknowledgments section.
 - Existing git history, tags and the already published image tags `v2.1.0`, `v2.1.1`, `latest`.
 - The stale GHCR image named `bidspm`: untouched (the README already says not to use it).
+- Container-side env vars read by the image (`BIDSPM_SKIP_RESULTS`, `BIDSPM_IGNORE_FIELDMAPS`, `BIDSPM_IGNORE_FIGURES`, `BIDSPM_SKIP_INTENDEDFOR_CHECK`, `BIDSPM_SKIP_ATLAS_INIT`, `BIDSPM_BMS_WORKER_ID`) and the log line `bidspm runner overrides:`: they are an interface with the image; an older image would silently ignore a renamed variable.
 
 ## Data folder migration
 
@@ -73,7 +74,7 @@ valid as long as the checkout folder is not renamed.
   `--check-environment`.
 - Colleagues with old clones: GitHub's redirect handles `git pull`; their `~/.bidspm` migrates on first start; their old
   `.bidspm` venv keeps working until they re-run `setup.sh`, which will build `.venv`.
-- Text changes inside `docs/superpowers/` history (old plans/specs) are left as written; the repo-wide test excludes them.
+- Text changes inside `docs/superpowers/` history (old plans/specs and `docs/roadmap-*.md`) are left as written; the repo-wide test excludes them.
 
 ## What comes after (decided in the same conversation, each gets its own spec, plan and branch)
 
