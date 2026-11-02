@@ -19,7 +19,7 @@ Spec: `docs/superpowers/specs/2026-11-02-rename-spm-bids-runner-design.md` (bran
 - Not rewritten: `docs/superpowers/**`, `docs/roadmap-*.md` (history).
 - TDD (CLAUDE.md): failing test first. Tests: `.bidspm/bin/python -m pytest -q tests` until Task 5 rebuilds the venv, then `.venv/bin/python -m pytest -q tests`.
 - Never push, never publish an image, never rename the local checkout folder. Commit footer: `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`.
-- Importing `lib` runs the data-folder migration (Task 3). Before any test run that imports `lib`, stop a running old GUI and back up `~/.bidspm` (Task 6, Step 1). Tasks 2-5 run only the focused tests listed; the full suite is Task 6.
+- Importing `lib` runs the data-folder migration (Task 3). The controller already stopped GUIs and made the backup `~/.bidspm.backup-2026-11-02` before dispatching (Task 6 Step 1's backup is therefore done; implementers must not repeat it or delete it). Tasks 2-5 run only the focused tests listed; the full suite is Task 6.
 
 ---
 
@@ -94,7 +94,7 @@ OLD_NAMES = [
 OLD_PATHS = re.compile(r"(^|/)(bidspm\.py|bidspm_gui\.py|activate_bidspm\.sh|test_bidspm_\w+\.py)$")
 
 # lib/data_dir.py and its test must name the old folder; this file lists the old names.
-EXEMPT_FILES = {"lib/data_dir.py", "tests/test_data_dir_migration.py", "tests/test_naming.py"}
+EXEMPT_FILES = {"lib/data_dir.py", "tests/test_data_dir_migration.py", "tests/test_naming.py", ".gitignore"}
 # history is left as written; vendored files are not ours
 EXEMPT_PREFIXES = ("docs/superpowers/", "docs/roadmap-", "static/vendor/")
 
@@ -327,6 +327,13 @@ sed -i -E \
   -e 's#~/\.bidspm#~/.spm-bids-runner#g' \
   -e 's#(^|[^[:alnum:]_-])\.bidspm\b#\1.venv#g' \
   $FILES
+```
+
+`.gitignore` is in `$FILES` (so `run_bidspm.log` and `bidspm_runner.egg-info/` are renamed), but the sed turns its line `.bidspm/` into `.venv/`, which is already ignored. The old venv `.bidspm/` still exists in every pre-rename checkout (and is the test interpreter until Task 5), so ignore it again, otherwise `git add -A` stages the whole venv. `.gitignore` is exempt from the guard test for this reason:
+
+```bash
+printf '\n# venv of checkouts made before the rename\n.bidspm/\n' >> .gitignore
+git status --short | grep -c '^?? .bidspm' || true   # expect 0
 ```
 
 - [ ] **Step 3: Fix the module name in the tests that `import bidspm`**
