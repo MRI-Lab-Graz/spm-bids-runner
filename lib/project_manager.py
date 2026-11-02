@@ -21,9 +21,8 @@ from typing import Optional, Dict, Any, List
 from dataclasses import MISSING, dataclass, field, asdict
 
 from lib.config import DEFAULT_DOCKER_IMAGE
+from lib.data_dir import DATA_DIR
 
-# Default data directory
-DATA_DIR = Path.home() / ".bidspm"
 PROJECTS_DIR = DATA_DIR / "projects"
 
 # Fallback locations for logs/config used only when no project is active.
@@ -155,7 +154,7 @@ class ProjectManager:
     """
     Manage BIDSPM projects.
     
-    Projects are stored in ~/.bidspm/projects/<project_id>/
+    Projects are stored in ~/.spm-bids-runner/projects/<project_id>/
     Each project directory contains:
     - project.json: Project metadata and configuration
     - logs/: Execution logs

@@ -15,7 +15,9 @@ from pathlib import Path
 from datetime import datetime
 from typing import Any, Callable, Dict, Optional, Sequence
 
-LOG_DIR = Path.home() / ".bidspm" / "logs"  # global fallback; project-scoped runs use project_manager instead
+from lib.data_dir import DATA_DIR
+
+LOG_DIR = DATA_DIR / "logs"  # global fallback; project-scoped runs use project_manager instead
 LOG_FILE = str(LOG_DIR / "run_bidspm.log")
 DEBUG = False
 
