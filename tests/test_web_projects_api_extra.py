@@ -5,8 +5,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import bidspm_gui
-from bidspm_gui import app as flask_app
+import spm_bids_runner_gui
+from spm_bids_runner_gui import app as flask_app
 from lib.project_manager import ProjectManager
 from webapp.web_projects_api import _build_project_preflight_results
 
@@ -124,7 +124,7 @@ class TestProjectRoutesExtra(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
         self.project_manager = ProjectManager(Path(self.temp_dir.name) / "projects")
-        self.project_manager_patch = patch.object(bidspm_gui, "project_manager", self.project_manager)
+        self.project_manager_patch = patch.object(spm_bids_runner_gui, "project_manager", self.project_manager)
         self.project_manager_patch.start()
         self.addCleanup(self.project_manager_patch.stop)
 

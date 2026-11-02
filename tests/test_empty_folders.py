@@ -2,7 +2,7 @@
 import json
 from unittest.mock import patch
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from lib.config import load_config
 from lib.preflight import run_preflight_from_config
 from lib.project_manager import ProjectManager

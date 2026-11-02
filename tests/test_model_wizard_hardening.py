@@ -1,7 +1,7 @@
 """M4/M10/L5: custom nuisance, non-ASCII trial_type values and model names in the wizard engine and its route."""
 import pytest
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from lib.model_wizard import WizardError, build_model
 from tests.preflight_support import confounds_for, make_trees
 from tests.test_model_wizard import SCAN, choices, run_node

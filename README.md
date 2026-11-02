@@ -1,10 +1,10 @@
-# BIDSPM Runner
+# SPM BIDS Runner
 
 A Python-based tool for running BIDS-StatsModel pipelines via containers (Docker or Apptainer) without requiring MATLAB.
 
 ## Overview
 
-BIDSPM Runner enables neuroimaging data analysis using the bidspm framework by leveraging containerized environments. The tool supports both Docker and Apptainer and can automatically perform smoothing and statistical analyses on BIDS-compliant datasets.
+SPM BIDS Runner enables neuroimaging data analysis using the bidspm framework by leveraging containerized environments. The tool supports both Docker and Apptainer and can automatically perform smoothing and statistical analyses on BIDS-compliant datasets.
 
 **New here? Follow the [student walkthrough](docs/walkthrough.md)** (install, wizard, readiness check, run, results, with screenshots).
 
@@ -25,13 +25,13 @@ BIDSPM Runner enables neuroimaging data analysis using the bidspm framework by l
 
 ## Repository layout
 
-- `bidspm.py` – primary entry point for all container workflows
+- `spm_bids_runner.py` – primary entry point for all container workflows
 - `bidspm_overrides/` – locally-patched upstream bidspm files, baked into the Docker
   image at build time (see `bidspm_overrides/README.md` for what's patched and why)
 - `containers/dockerfile/` – the Dockerfile and build scripts for the bidspm image
 - `lib/spm_standalone.py` – optional estimation in SPM's compiled standalone (see below)
 - `scripts/` – helper utilities (environment activation, setup, wrapper scripts); `scripts/check_run_log.py` fails on any unexpected error or warning in a run log
-- `logs/` – auto-generated run logs (e.g., `run_bidspm.log`, `model_*_timestamp.log`)
+- `logs/` – auto-generated run logs (e.g., `run_spm_bids_runner.log`, `model_*_timestamp.log`)
 - `tests/` – automated tests for API and feature behavior
 - `docs/repository_notes.md` – engineering notes (OO direction and test policy)
 
@@ -73,7 +73,7 @@ The tool automatically detects your platform and selects the appropriate contain
 ### 🚀 **Quick Platform Setup**
 
 ```bash
-python bidspm.py --pilot  # Automatically selects the right container
+python spm_bids_runner.py --pilot  # Automatically selects the right container
 ```
 
 ### 📁 **Container Configuration Files**
@@ -119,15 +119,15 @@ This repo is a Python CLI/webapp that drives a Docker (or Apptainer)
 container where the actual SPM/Octave analysis runs -- you need both parts. Follow these steps in order:
 
 ```bash
-git clone https://github.com/MRI-Lab-Graz/bidspm.git
-cd bidspm
+git clone https://github.com/MRI-Lab-Graz/spm-bids-runner.git
+cd spm-bids-runner
 # get the image, EITHER pull it from GHCR (once it is published there):
 #   docker pull ghcr.io/mri-lab-graz/spm-bids-runner:latest
 # OR build it from this checkout (SPM 26.10.01 is compiled for Octave during the build;
 # versions are build arguments: --build-arg SPM_TAG=26.10.01 --build-arg BIDSPM_TAG=v4.0.0):
 docker build -f containers/dockerfile/dockerfile -t ghcr.io/mri-lab-graz/spm-bids-runner:latest .
-./scripts/setup.sh        # uv builds .bidspm: its own Python 3.12 (.python-version) + the packages in uv.lock
-./scripts/start_gui.sh    # or: .bidspm/bin/python bidspm.py --help
+./scripts/setup.sh        # uv builds .venv: its own Python 3.12 (.python-version) + the packages in uv.lock
+./scripts/start_gui.sh    # or: .venv/bin/python spm_bids_runner.py --help
 ```
 
 (`containers/dockerfile/build_mri_lab_container.sh` wraps the same docker build.) The default
@@ -140,13 +140,13 @@ installed on the system is not used).
 
 The environment is managed entirely by [uv](https://docs.astral.sh/uv/): dependencies live in `pyproject.toml` and are
 locked in `uv.lock`. It uses uv's own Python, never the OS's or FSL's. To change dependencies edit `pyproject.toml`, run
-`uv lock`, then `UV_PROJECT_ENVIRONMENT=.bidspm uv sync --managed-python`.
+`uv lock`, then `UV_PROJECT_ENVIRONMENT=.venv uv sync --managed-python`.
 
-**Starting the GUI:** `./scripts/start_gui.sh` activates the project's `.bidspm` virtual environment and starts it
-(port `$BIDSPM_PORT`, default 5100; any options such as `--host` or `--no-browser` are passed on). If an older bidspm GUI
+**Starting the GUI:** `./scripts/start_gui.sh` activates the project's `.venv` virtual environment and starts it
+(port `$SPM_BIDS_RUNNER_PORT`, default 5100; any options such as `--host` or `--no-browser` are passed on). If an older bidspm GUI
 already listens on that port it is stopped and replaced; any other program on the port is left alone and the script exits
-with its PID (choose another port: `BIDSPM_PORT=5101 ./scripts/start_gui.sh`). On start the GUI prints a "Pre-flight check"
-(a list of what is ready or missing); the same check runs on demand with `python bidspm.py --check-environment`.
+with its PID (choose another port: `SPM_BIDS_RUNNER_PORT=5101 ./scripts/start_gui.sh`). On start the GUI prints a "Pre-flight check"
+(a list of what is ready or missing); the same check runs on demand with `python spm_bids_runner.py --check-environment`.
 There are no web routes for it. A GUI started in the background (`./scripts/start_gui.sh > gui.log 2>&1 &`) ignores Ctrl+C;
 stop it with `kill <pid>` (SIGTERM). The GUI listens on `127.0.0.1:5100` only and has no login: do not expose the port.
 On a shared server each student runs their own instance on their own port.
@@ -160,11 +160,11 @@ To open the browser at once instead, add this to the (untracked) `.vscode/settin
 jobs and read files). Forward the port from your own machine instead of exposing it:
 `ssh -L 5100:localhost:5100 you@server`, then open `http://localhost:5100`. Use `--host 0.0.0.0` only on a network you trust.
 
-To activate the environment in your shell: `source ./scripts/activate_bidspm.sh`.
+To activate the environment in your shell: `source ./scripts/activate.sh`.
 
 **Environment already set up but broken?** `scripts/setup.sh` writes an
 `.install.lock` file after a successful run and skips re-running by default —
-so if the `.bidspm` venv later breaks (e.g. its Python interpreter was a
+so if the `.venv` venv later breaks (e.g. its Python interpreter was a
 symlink into a system Python that got moved/reinstalled), a plain re-run of
 `./scripts/setup.sh` is a silent no-op. Rebuild it with:
 
@@ -173,13 +173,13 @@ symlink into a system Python that got moved/reinstalled), a plain re-run of
 ```
 
 Alternatively, point the GUI/CLI at any working interpreter directly without
-touching the venv, via `BIDSPM_PYTHON=/path/to/python python bidspm_gui.py`.
+touching the venv, via `SPM_BIDS_RUNNER_PYTHON=/path/to/python python spm_bids_runner_gui.py`.
 
 ### Manual installation (instead of `scripts/setup.sh`)
 
 ```bash
-UV_PROJECT_ENVIRONMENT=.bidspm uv sync --managed-python   # needs uv (https://docs.astral.sh/uv/)
-source .bidspm/bin/activate
+UV_PROJECT_ENVIRONMENT=.venv uv sync --managed-python   # needs uv (https://docs.astral.sh/uv/)
+source .venv/bin/activate
 ```
 
 ## Testing
@@ -187,12 +187,12 @@ source .bidspm/bin/activate
 Run the test suite from repository root:
 
 ```bash
-.bidspm/bin/python -m pytest -q tests   # pytest, playwright, pandas and coverage are in the uv "dev" group
+.venv/bin/python -m pytest -q tests   # pytest, playwright, pandas and coverage are in the uv "dev" group
 ```
 
 A few tests need extras and skip themselves when they are missing (pandas for `scripts/fix_events_format.py`, GNU Octave on the host
-for the `.m` override tests). The image smoke test runs only with `BIDSPM_TEST_IMAGE=<built image>`. `tests/test_analysis_page_browser.py`, `tests/test_transformer_builder_browser.py` and
-`tests/test_transformer_handoff_browser.py` (the analysis page <-> transformer builder round trip) open the pages in headless Chromium and need a headless Chromium: run `.bidspm/bin/playwright install chromium` once (about 130 MB). Without it about 200 browser tests skip silently.
+for the `.m` override tests). The image smoke test runs only with `SPM_BIDS_RUNNER_TEST_IMAGE=<built image>`. `tests/test_analysis_page_browser.py`, `tests/test_transformer_builder_browser.py` and
+`tests/test_transformer_handoff_browser.py` (the analysis page <-> transformer builder round trip) open the pages in headless Chromium and need a headless Chromium: run `.venv/bin/playwright install chromium` once (about 130 MB). Without it about 200 browser tests skip silently.
 The full suite takes about 5 minutes.
 
 Notes:
@@ -234,14 +234,14 @@ The GUI writes the settings file for you. For command-line use, start from the s
 
 ```bash
 cp config/config.example.json config/config.json   # then edit the paths
-python bidspm.py --preflight -s config/config.json [--validator auto|prism|bids|skip | --skip-validator]
+python spm_bids_runner.py --preflight -s config/config.json [--validator auto|prism|bids|skip | --skip-validator]
 ```
 
 It prints a JSON report (`verdict`: `ready`, `warnings` or `blocked`) and exits 1 if blocked. With `--progress` it also writes
 progress lines to stderr; stdout stays pure JSON.
 
 ```bash
-python bidspm.py --preflight --progress -s config/config.json
+python spm_bids_runner.py --preflight --progress -s config/config.json
 ```
 
 In the GUI the readiness check lives in the last stage ("Review and run") of the analysis page, next to a validator select;
@@ -445,26 +445,26 @@ allow-list of data-dependent notices (contrasts without significant voxels, miss
 3. **Run pipeline**:
 
 ```bash
-python bidspm.py
+python spm_bids_runner.py
 ```
 
 **Command line options:**
 
 ```bash
 # Run with default configuration files
-python bidspm.py
+python spm_bids_runner.py
 
 # Run with custom configuration files
-python bidspm.py -s my_config.json -c my_container.json
+python spm_bids_runner.py -s my_config.json -c my_container.json
 
 # Run with custom model file
-python bidspm.py -m /path/to/my_model.json
+python spm_bids_runner.py -m /path/to/my_model.json
 
 # Run with all custom files
-python bidspm.py -s config.json -c container.json -m models/task_model.json
+python spm_bids_runner.py -s config.json -c container.json -m models/task_model.json
 
 # Show help
-python bidspm.py -h
+python spm_bids_runner.py -h
 ```
 
 **Available options:**
@@ -506,7 +506,7 @@ Log files are automatically generated with timestamps and model names for easy t
 **Actions are now selected at runtime:**
 
 ```bash
-python bidspm.py --action smooth stats
+python spm_bids_runner.py --action smooth stats
 ```
 ## Configuration Validation
 
@@ -515,7 +515,7 @@ The tool automatically validates your `config.json` against a JSON schema (`conf
 **How it works:**
 
 - The schema is defined in `config_schema.json` (see repository for example).
-- On startup, `bidspm.py` checks that your `config.json` matches the schema.
+- On startup, `spm_bids_runner.py` checks that your `config.json` matches the schema.
 - If validation fails, you get a clear error message and the run is aborted.
 - The schema validation uses the `jsonschema` Python package (installed automatically via setup.sh/pyproject.toml).
 
@@ -558,20 +558,20 @@ The tool automatically validates your `config.json` against a JSON schema (`conf
 
 ```bash
 # Use a specific model file instead of the one specified in config.json
-python bidspm.py -m /path/to/custom_model.json
+python spm_bids_runner.py -m /path/to/custom_model.json
 
 # Combine with custom configuration files
-python bidspm.py -s study_config.json -c docker_config.json -m models/task_analysis.json
+python spm_bids_runner.py -s study_config.json -c docker_config.json -m models/task_analysis.json
 ```
 
 #### Example 4: Pilot mode for testing
 
 ```bash
 # Test your configuration with one random subject
-python bidspm.py -s config.json -c container.json --pilot
+python spm_bids_runner.py -s config.json -c container.json --pilot
 
 # Pilot mode can be combined with other options
-python bidspm.py -s test_config.json -c container.json -m pilot_model.json --pilot
+python spm_bids_runner.py -s test_config.json -c container.json -m pilot_model.json --pilot
 ```
 
 **Note:** Pilot mode is particularly useful for:
@@ -606,7 +606,7 @@ The tool automatically processes all subjects in the fMRIPrep output directory:
 ### Logs and debugging
 
 - All activities are logged to timestamped files: `{model_name}_{YYYYMMDD_HHMMSS}.log`
-- Debug mode can be enabled in `bidspm.py` (DEBUG = True)
+- Debug mode can be enabled in `spm_bids_runner.py` (DEBUG = True)
 - Container commands are displayed before execution
 - Log files include configuration details, processing steps, and any errors
 
@@ -647,10 +647,10 @@ The tool automatically validates your BIDS-StatsModel file against the official 
 
 ```bash
 # Default behavior - automatic validation
-python bidspm.py
+python spm_bids_runner.py
 
 # Skip validation if you're confident your model is correct
-python bidspm.py --skip-modelvalidation
+python spm_bids_runner.py --skip-modelvalidation
 
 # Manual validation (standalone)
 python validate_bids_model.py /path/to/your/model.json
@@ -670,7 +670,7 @@ working_directory/
 │   └── models/                # BIDS-StatsModel files
 ├── config.json               # Main configuration
 ├── container.json            # Container configuration
-└── run_bidspm.log           # Log file
+└── run_spm_bids_runner.log           # Log file
 ```
 
 ## Troubleshooting
@@ -706,8 +706,8 @@ working_directory/
 
 ### Debug tips
 
-- Enable debug mode in `bidspm.py`
-- Check the log file `run_bidspm.log`
+- Enable debug mode in `spm_bids_runner.py`
+- Check the log file `run_spm_bids_runner.log`
 - Test container commands manually
 
 ## Atlases
@@ -759,7 +759,7 @@ GNU Octave GPL-3.0-or-later); see `/usr/share/doc/spm-bids-runner/NOTICE` in the
 
 For questions or issues:
 
-- Open an [Issue](https://github.com/MRI-Lab-Graz/bidspm/issues)
+- Open an [Issue](https://github.com/MRI-Lab-Graz/spm-bids-runner/issues)
 - Consult the [BIDSPM documentation](https://bidspm.readthedocs.io/)
 - Check the [BIDS-StatsModel specification](https://bids-standard.github.io/stats-models/)
 

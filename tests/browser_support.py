@@ -61,11 +61,11 @@ def make_dataset(tmp: Path) -> None:
 
 
 def start_server(tmp: Path):
-    """Start bidspm_gui.py with an isolated HOME; returns (process, base_url, project_id)."""
+    """Start spm_bids_runner_gui.py with an isolated HOME; returns (process, base_url, project_id)."""
     port = free_port()
     base = f"http://127.0.0.1:{port}"
     proc = subprocess.Popen(
-        [sys.executable, "bidspm_gui.py", "--no-browser", "-p", str(port)], cwd=str(REPO_ROOT),
+        [sys.executable, "spm_bids_runner_gui.py", "--no-browser", "-p", str(port)], cwd=str(REPO_ROOT),
         env=dict(os.environ, HOME=str(tmp / "home")), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for _ in range(100):
         try:

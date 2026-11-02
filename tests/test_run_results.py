@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import bidspm
+import spm_bids_runner
 import lib.core as core
 from lib.config import ContainerConfig
 from lib.core import Pipeline, PipelineOptions
@@ -17,12 +17,12 @@ ENV = {"BIDSPM_SKIP_RESULTS": "1"}
 
 class TestRunResultsCli(unittest.TestCase):
     def test_flag_parsed(self):
-        with patch("sys.argv", ["bidspm.py", "--action", "stats", "--results"]):
-            self.assertTrue(bidspm.parse_arguments().run_results)
+        with patch("sys.argv", ["spm_bids_runner.py", "--action", "stats", "--results"]):
+            self.assertTrue(spm_bids_runner.parse_arguments().run_results)
 
     def test_off_by_default(self):
-        with patch("sys.argv", ["bidspm.py", "--action", "stats"]):
-            self.assertFalse(bidspm.parse_arguments().run_results)
+        with patch("sys.argv", ["spm_bids_runner.py", "--action", "stats"]):
+            self.assertFalse(spm_bids_runner.parse_arguments().run_results)
 
     def test_pipeline_option_off_by_default(self):
         self.assertFalse(PipelineOptions(actions=["stats"]).run_results)

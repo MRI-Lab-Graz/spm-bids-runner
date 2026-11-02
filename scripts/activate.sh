@@ -1,17 +1,17 @@
 #!/bin/bash
-# Activation script for bidspm-runner environment
+# Activation script for spm-bids-runner environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-if [ ! -d "$PROJECT_ROOT/.bidspm" ]; then
+if [ ! -d "$PROJECT_ROOT/.venv" ]; then
     echo "❌ Virtual environment not found. Please run ./scripts/setup.sh first."
     return 1 2>/dev/null || exit 1
 fi
 
-source "$PROJECT_ROOT/.bidspm/bin/activate"
+source "$PROJECT_ROOT/.venv/bin/activate"
 
-export BIDSPM_PROJECT_ROOT="$PROJECT_ROOT"
+export SPM_BIDS_RUNNER_PROJECT_ROOT="$PROJECT_ROOT"
 
 echo "🚀 BIDSPM environment activated!"
 echo "Project root: $PROJECT_ROOT"

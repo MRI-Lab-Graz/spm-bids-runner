@@ -45,7 +45,7 @@ class TestStartGuiScript(unittest.TestCase):
         self.tmp.cleanup()
 
     def start(self, *args, **env):
-        full = {**os.environ, "BIDSPM_VENV": str(self.dir / "venv"), "BIDSPM_PORT": str(self.port),
+        full = {**os.environ, "SPM_BIDS_RUNNER_VENV": str(self.dir / "venv"), "SPM_BIDS_RUNNER_PORT": str(self.port),
                 "HOME": str(self.dir / "home"), **env}
         self.proc = subprocess.Popen(["bash", str(SCRIPT), *args], env=full, cwd=str(self.dir),
                                      start_new_session=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -75,7 +75,7 @@ class TestStartGuiScript(unittest.TestCase):
         self.assertFalse(_listening(self.port))
 
     def test_without_a_venv_it_fails_fast_and_says_how_to_create_one(self):
-        self.start(BIDSPM_VENV=str(self.dir / "missing"))
+        self.start(SPM_BIDS_RUNNER_VENV=str(self.dir / "missing"))
         out, _ = self.proc.communicate(timeout=20)
         self.assertNotEqual(self.proc.returncode, 0)
         self.assertIn("setup.sh", out)
@@ -117,14 +117,14 @@ class TestStartGuiScript(unittest.TestCase):
         self.assertIn("--port", out)
 
     def test_an_old_gui_instance_on_the_port_is_replaced(self):
-        old = self._listener("bidspm_gui.py")
+        old = self._listener("spm_bids_runner_gui.py")
         self.start("--no-browser")
         old.wait(timeout=15)  # SIGTERM'd by the new instance
         self.assertTrue(self.wait_listening(30), "new GUI never came up")
 
     def test_the_startup_self_check_reaches_a_redirected_log(self):
         log = self.dir / "gui.log"
-        full = {**os.environ, "BIDSPM_VENV": str(self.dir / "venv"), "BIDSPM_PORT": str(self.port),
+        full = {**os.environ, "SPM_BIDS_RUNNER_VENV": str(self.dir / "venv"), "SPM_BIDS_RUNNER_PORT": str(self.port),
                 "HOME": str(self.dir / "home")}
         with open(log, "w") as fh:
             self.proc = subprocess.Popen(["bash", str(SCRIPT), "--no-browser"], env=full, cwd=str(self.dir),

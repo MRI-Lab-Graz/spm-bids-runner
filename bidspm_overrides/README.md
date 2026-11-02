@@ -76,7 +76,7 @@ correct behavior.
   image raises `returnAtlasDir:atlasMissing` ("not included in this image ... for licence reasons", with the path
   where a derived image must add it) instead of failing later on a missing file. Knows `aal` by name.
 - **renameStructField.m** (lib/utils): own rewrite; upstream bundles a MathWorks helper without a licence.
-- **cliStats.m**: also honours env `BIDSPM_SKIP_RESULTS` (set by `bidspm.py` unless `--results` or the report action is requested) to skip the
+- **cliStats.m**: also honours env `BIDSPM_SKIP_RESULTS` (set by `spm_bids_runner.py` unless `--results` or the report action is requested) to skip the
   SPM Results export that `stats`/`contrasts` run last; and `--name_by_confounds` (see above). Also fixes
   `--design_only`: v4.0.0's model loop starts with `rmfield(opt, 'model')`, which drops
   `opt.model.designOnly`, so the flag never stopped before estimation. Now it specifies the model and stops.

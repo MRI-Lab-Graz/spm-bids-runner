@@ -501,7 +501,7 @@ class TestUtilsHelpers(unittest.TestCase):
                 (derivatives_dir / "dataset_description.json").read_text(encoding="utf-8")
             )
             self.assertEqual(dataset_description["DatasetType"], "derivative")
-            self.assertEqual(dataset_description["GeneratedBy"][0]["Name"], "bidspm-runner")
+            self.assertEqual(dataset_description["GeneratedBy"][0]["Name"], "spm-bids-runner")
 
     def test_cleanup_tmp_directories_removes_old_entries(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -40,8 +40,8 @@ class ExecutionRegistry:
         to_remove = len(self.executions) - self.max_executions
         for execution_id, execution in finished[:to_remove]:
             # Each /run call may have auto-generated a run_settings_*.json
-            # scratch file (see run_bidspm() below) that otherwise
-            # accumulates forever in ~/.bidspm/config or the project's
+            # scratch file (see run_spm_bids_runner() below) that otherwise
+            # accumulates forever in ~/.spm-bids-runner/config or the project's
             # configs/ dir -- one per run, never cleaned up. Only files we
             # generated ourselves are removed; a settings path the caller
             # explicitly supplied is left untouched.
@@ -108,11 +108,11 @@ def register_execution_routes(
     get_project_manager: ProjectManagerGetter,
     normalize_subject_ids: NormalizeSubjects,
     validate_bids_model: ValidateModel,
-    bidspm_script: str,
+    runner_script: str,
     python_exe_path: str,
 ) -> None:
     @app.route('/run', methods=['POST'])
-    def run_bidspm():
+    def run_spm_bids_runner():
         data = request.json or {}
         actions = data.get('actions', [])
         project_id = data.get('project_id')
@@ -196,7 +196,7 @@ def register_execution_routes(
                 if not result['valid']:
                     return reject(f"Model validation failed: {result.get('error', 'Unknown error')}")
 
-        # No --settings: bidspm.py falls back to config/config.json (relative to cwd); gate on it if present.
+        # No --settings: spm_bids_runner.py falls back to config/config.json (relative to cwd); gate on it if present.
         gate_settings = data.get('settings') or 'config/config.json'
         if (data.get('settings') or os.path.isfile(gate_settings)) and any(a in ('smooth', 'stats', 'dataset') for a in actions):
             try:
@@ -218,7 +218,7 @@ def register_execution_routes(
                 return reject('Preflight check failed: fix the listed problems before running.', preflight=preflight)
 
         python_exe = python_exe_path if os.path.exists(python_exe_path) else 'python3'
-        command = [python_exe, bidspm_script]
+        command = [python_exe, runner_script]
         command.extend(['--action'] + actions)
 
         if data.get('settings'):

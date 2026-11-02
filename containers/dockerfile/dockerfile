@@ -15,8 +15,8 @@ ARG BIDSPM_TAG=v4.0.0
 # components keep their own notices, listed in NOTICE.
 LABEL org.opencontainers.image.title="spm-bids-runner" \
       org.opencontainers.image.description="Runs BIDS Stats Models with bidspm ${BIDSPM_TAG} and SPM ${SPM_TAG} on GNU Octave 9 (no MATLAB needed), with MRI-Lab Graz bug fixes" \
-      org.opencontainers.image.source="https://github.com/MRI-Lab-Graz/bidspm" \
-      org.opencontainers.image.documentation="https://github.com/MRI-Lab-Graz/bidspm#readme" \
+      org.opencontainers.image.source="https://github.com/MRI-Lab-Graz/spm-bids-runner" \
+      org.opencontainers.image.documentation="https://github.com/MRI-Lab-Graz/spm-bids-runner#readme" \
       org.opencontainers.image.vendor="MRI-Lab Graz, University of Graz" \
       org.opencontainers.image.authors="Karl Koschutnig <karl.koschutnig@uni-graz.at>" \
       org.opencontainers.image.licenses="GPL-3.0-only" \

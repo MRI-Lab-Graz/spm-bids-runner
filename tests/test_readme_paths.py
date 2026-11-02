@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PREFIXES = ("scripts/", "containers/", "config/", "docs/", "bidspm.py", "bidspm_", "lib/", "webapp/", "static/", "templates/")
+PREFIXES = ("scripts/", "containers/", "config/", "docs/", "spm_bids_runner.py", "bidspm_", "lib/", "webapp/", "static/", "templates/")
 
 
 # Files a student creates from a shipped template (git-ignored, so absent from a fresh clone); allowed only while the

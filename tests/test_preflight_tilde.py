@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from lib.preflight import signature
 from tests.preflight_support import make_trees, write_model
 from tests.test_preflight_jobs import WAIT, parse
@@ -45,7 +45,7 @@ def test_job_route_accepts_tilde_paths(home):
 def test_cli_preflight_accepts_tilde_paths(home):
     path = home / "cfg.json"
     path.write_text(json.dumps(tilde_cfg(home)))
-    proc = subprocess.run([sys.executable, "bidspm.py", "--preflight", "--skip-validator", "-s", str(path)],
+    proc = subprocess.run([sys.executable, "spm_bids_runner.py", "--preflight", "--skip-validator", "-s", str(path)],
                           cwd=ROOT, capture_output=True, text=True, env={**os.environ, "HOME": str(home)})
     assert proc.returncode == 0, proc.stdout
     assert json.loads(proc.stdout)["verdict"] != "blocked"

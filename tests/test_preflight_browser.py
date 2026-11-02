@@ -123,8 +123,8 @@ class TestPreflightPanel(unittest.TestCase):
     def test_validator_choice_is_keyed_per_project(self):
         page = self.open_page()
         page.select_option("#validator-mode", "skip")
-        keys = page.evaluate("Object.keys(localStorage).filter(k => k.startsWith('bidspm_validator_mode_'))")
-        self.assertEqual(keys, [f"bidspm_validator_mode_{self.project_id}"])
+        keys = page.evaluate("Object.keys(localStorage).filter(k => k.startsWith('spm_bids_runner_validator_mode_'))")
+        self.assertEqual(keys, [f"spm_bids_runner_validator_mode_{self.project_id}"])
 
     def test_note_and_checking_status_are_shown(self):
         page = self.open_page()

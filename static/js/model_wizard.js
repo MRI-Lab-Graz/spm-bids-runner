@@ -1,6 +1,6 @@
 // model_wizard.js -- renders the wizard form and collects choices. All logic lives in lib/model_wizard.py
 // (/api/wizard/scan, /api/wizard/build). Server strings go in via textContent/DOM nodes, never innerHTML.
-const WIZ = window.BIDSPM_WIZARD_CONTEXT;
+const WIZ = window.SPM_BIDS_RUNNER_WIZARD_CONTEXT;
 const wiz = {step: 'task', scanError: false, buildError: false, edit: 0, built: 0, scan: null, preview: null, model: null, checked: null, runSeq: 0, recipes: [], pairs: [], timer: null, seq: 0, scanSeq: 0, optKey: null, uid: 0, pathEdited: false, nameEdited: false};
 const $ = (id) => document.getElementById(id);
 

@@ -2,7 +2,7 @@ spm-bids-runner -- NOTICE
 =========================
 
 This container image runs BIDS Stats Models with bidspm and SPM on GNU Octave. It is assembled by
-MRI-Lab Graz, University of Graz (https://github.com/MRI-Lab-Graz/bidspm). The scientific software in it
+MRI-Lab Graz, University of Graz (https://github.com/MRI-Lab-Graz/spm-bids-runner). The scientific software in it
 is NOT ours: all credit goes to its authors.
 
 Upstream software
@@ -28,7 +28,7 @@ Upstream software
 What MRI-Lab Graz changed
 -------------------------
 Bug fixes for running bidspm v4.0.0 with SPM 26 on Octave (bidspm_overrides/ and
-containers/dockerfile/patches/ in https://github.com/MRI-Lab-Graz/bidspm). They modify bidspm and are
+containers/dockerfile/patches/ in https://github.com/MRI-Lab-Graz/spm-bids-runner). They modify bidspm and are
 distributed under the same licence, GPL-3.0. The combined program is conveyed under GPL-3.0
 (OCI label org.opencontainers.image.licenses="GPL-3.0-only").
 
@@ -47,7 +47,7 @@ The complete corresponding source of the GPL parts is available from:
 - bidspm v4.0.0 with submodules: https://github.com/cpp-lln-lab/bidspm/tree/v4.0.0
 - SPM 26.10.01: https://github.com/spm/spm/archive/refs/tags/26.10.01.tar.gz
 - GNU Octave and Octave Forge packages: Debian trixie source packages (apt-get source octave), https://octave.org
-- The changes and the build recipe of this image: https://github.com/MRI-Lab-Graz/bidspm
+- The changes and the build recipe of this image: https://github.com/MRI-Lab-Graz/spm-bids-runner
   (containers/dockerfile/dockerfile, bidspm_overrides/, containers/dockerfile/patches/), at the commit named by
   the image's org.opencontainers.image.version / revision labels.
 MRI-Lab Graz will also provide this corresponding source on request for at least three years after

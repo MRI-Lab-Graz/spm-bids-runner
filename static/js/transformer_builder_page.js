@@ -1,13 +1,13 @@
 // transformer_builder_page.js
 // Extracted from templates/transformer_builder.html: the page controller (state, event wiring, apply-to-model,
 // launch-context handling) built on the transformer_builder_* factories.
-// Needs window.BIDSPM_TRANSFORMER_CONTEXT = {projectId, modelsFile}, set by a small inline script in the template.
+// Needs window.SPM_BIDS_RUNNER_TRANSFORMER_CONTEXT = {projectId, modelsFile}, set by a small inline script in the template.
 
 (function () {
   'use strict';
 
-  const CURRENT_PROJECT_ID = window.BIDSPM_TRANSFORMER_CONTEXT.projectId;
-  const PROJECT_MODELS_FILE = window.BIDSPM_TRANSFORMER_CONTEXT.modelsFile;
+  const CURRENT_PROJECT_ID = window.SPM_BIDS_RUNNER_TRANSFORMER_CONTEXT.projectId;
+  const PROJECT_MODELS_FILE = window.SPM_BIDS_RUNNER_TRANSFORMER_CONTEXT.modelsFile;
   const TRANSFORMER_LAUNCH_CONTEXT_KEY = 'bidspm.transformerLaunchContext';
   const PENDING_TRANSFORMER_KEY = 'bidspm.pendingTransformerModel';
   // bidspm only ever executes node Transformations for Run-level events.tsv data

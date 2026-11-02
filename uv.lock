@@ -35,7 +35,7 @@ wheels = [
 ]
 
 [[package]]
-name = "bidspm-runner"
+name = "spm-bids-runner"
 version = "2.1.1"
 source = { virtual = "." }
 dependencies = [

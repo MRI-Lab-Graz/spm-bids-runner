@@ -24,7 +24,7 @@ def test_from_config_matches_run_preflight(tmp_path):
 
 
 def cli(*args):
-    return subprocess.run([sys.executable, "bidspm.py", *args], cwd=ROOT, capture_output=True, text=True)
+    return subprocess.run([sys.executable, "spm_bids_runner.py", *args], cwd=ROOT, capture_output=True, text=True)
 
 
 def test_cli_preflight_prints_json_and_exits_0_when_not_blocked(tmp_path):
@@ -40,7 +40,7 @@ def test_cli_preflight_exits_1_when_blocked(tmp_path):
 
 
 def test_help_mentions_preflight_options():
-    out = subprocess.run([sys.executable, str(ROOT / "bidspm.py"), "--help"], capture_output=True, text=True).stdout
+    out = subprocess.run([sys.executable, str(ROOT / "spm_bids_runner.py"), "--help"], capture_output=True, text=True).stdout
     assert all(opt in out for opt in ("--preflight", "--validator", "--skip-validator"))
 
 
@@ -77,7 +77,7 @@ def test_cli_preflight_uses_action_values(tmp_path):
 
 
 def test_cli_validator_defaults_to_auto():
-    import bidspm
+    import spm_bids_runner
     from unittest.mock import patch
-    with patch("sys.argv", ["bidspm.py", "--preflight"]):
-        assert bidspm.parse_arguments().validator == "auto"
+    with patch("sys.argv", ["spm_bids_runner.py", "--preflight"]):
+        assert spm_bids_runner.parse_arguments().validator == "auto"

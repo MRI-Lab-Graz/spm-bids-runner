@@ -114,7 +114,7 @@
 
 {% block scripts %}
 <script>
-  window.BIDSPM_WIZARD_CONTEXT = {{ wizard_context | tojson }};
+  window.SPM_BIDS_RUNNER_WIZARD_CONTEXT = {{ wizard_context | tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/readiness_panel.js', v=static_version('js/readiness_panel.js')) }}"></script>
 <script src="{{ url_for('static', filename='js/model_wizard_steps.js', v=static_version('js/model_wizard_steps.js')) }}"></script>

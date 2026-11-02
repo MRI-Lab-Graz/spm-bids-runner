@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from tests.preflight_support import make_trees
 from webapp import web_preflight_api as api
 

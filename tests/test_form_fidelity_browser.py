@@ -478,7 +478,7 @@ class TestValidatorModeStorage(FidelityCase):
         self.new_project()
         page = self.browser.new_page()
         self.pages.append(page)
-        page.add_init_script(f"localStorage.setItem('bidspm_validator_mode_{self.pid}', 'garbage')")
+        page.add_init_script(f"localStorage.setItem('spm_bids_runner_validator_mode_{self.pid}', 'garbage')")
         page.goto(f"{self.base}/analysis/{self.pid}", wait_until="load")
         self.assertEqual(page.input_value("#validator-mode"), "auto")
 

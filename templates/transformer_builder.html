@@ -300,7 +300,7 @@
 <script src="{{ url_for('static', filename='js/transformer_builder_pipeline.js', v=static_version('js/transformer_builder_pipeline.js')) }}"></script>
 <script>
   // The only Jinja-dependent part of the page's scripts; set before transformer_builder_page.js runs.
-  window.BIDSPM_TRANSFORMER_CONTEXT = {
+  window.SPM_BIDS_RUNNER_TRANSFORMER_CONTEXT = {
     projectId: '{{ current_project_id or "" }}',
     modelsFile: {{ (current_project.config.models_file | replace('"', '') if current_project and current_project.config.models_file else '') | tojson }},
   };

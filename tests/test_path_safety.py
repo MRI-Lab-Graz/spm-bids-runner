@@ -4,15 +4,15 @@ import os
 
 import pytest
 
-import bidspm_gui
-from bidspm_gui import app
+import spm_bids_runner_gui
+from spm_bids_runner_gui import app
 from tests.preflight_support import make_trees
 
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     bids, fmriprep = make_trees(tmp_path)
-    monkeypatch.setattr(bidspm_gui, "_get_all_bids_dirs", lambda: [str(bids)])
+    monkeypatch.setattr(spm_bids_runner_gui, "_get_all_bids_dirs", lambda: [str(bids)])
     out = tmp_path / "out"
     out.mkdir()
     return {"bids": bids, "fmriprep": fmriprep, "out": out, "tmp": tmp_path, "c": app.test_client()}
@@ -137,7 +137,7 @@ def test_file_content_post_symlink_bypass_and_protected_names(env):
 def test_is_inside_bids_dir_resolves_symlinks(env):
     link = env["tmp"] / "bidslink"
     link.symlink_to(env["bids"], target_is_directory=True)
-    assert bidspm_gui._is_inside_bids_dir(str(link / "z.json"))
+    assert spm_bids_runner_gui._is_inside_bids_dir(str(link / "z.json"))
 
 
 # ---- L6 / L7 / M11 ------------------------------------------------------------------------------

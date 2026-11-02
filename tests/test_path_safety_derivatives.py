@@ -1,5 +1,5 @@
 """Review round: <bids>/derivatives/** is outside the protected BIDS tree; dataset files stay protected everywhere."""
-import bidspm_gui
+import spm_bids_runner_gui
 from tests.test_path_safety import env, is_json_error, wizard_body  # noqa: F401
 
 
@@ -31,6 +31,6 @@ def test_symlink_from_outside_into_bids_refused_but_derivatives_through_it_allow
 
 
 def test_bids_folder_registered_as_root_does_not_block_everything(env, monkeypatch):  # noqa: F811
-    monkeypatch.setattr(bidspm_gui, "_get_all_bids_dirs", lambda: ["/"])
+    monkeypatch.setattr(spm_bids_runner_gui, "_get_all_bids_dirs", lambda: ["/"])
     assert env["c"].post("/file_content", json={"path": str(env["out"] / "m.json"), "content": "{}"}).get_json()["success"]
     is_json_error(env["c"].post("/file_content", json={"path": str(env["out"] / "participants.tsv"), "content": "x"}))

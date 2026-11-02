@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from lib import preflight
 from tests.preflight_support import make_trees
 from webapp import web_preflight_api as api

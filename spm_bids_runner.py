@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-BIDSPM Runner - CLI Entry Point
+SPM BIDS Runner - CLI Entry Point
 
 This is a thin CLI wrapper that parses arguments and delegates to the core Pipeline.
-All business logic is in lib/core.py to avoid duplication with bidspm_gui.py.
+All business logic is in lib/core.py to avoid duplication with spm_bids_runner_gui.py.
 """
 
 import argparse
@@ -28,7 +28,7 @@ CONTAINER_CONFIG_FILE = "containers/container.json"
 def show_help():
     """Display comprehensive help information."""
     help_text = """
-🧠 BIDSPM Runner - BIDS-StatsModel Pipeline Tool
+🧠 SPM BIDS Runner - BIDS-StatsModel Pipeline Tool
 
 DESCRIPTION:
     A Python wrapper for running BIDS-StatsModel statistical pipelines using
@@ -36,7 +36,7 @@ DESCRIPTION:
     pipeline from smoothing preprocessed data to running statistical analyses.
 
 USAGE:
-    python bidspm.py [OPTIONS] --action ACTION [ACTION ...]
+    python spm_bids_runner.py [OPTIONS] --action ACTION [ACTION ...]
 
 REQUIRED ARGUMENTS:
     --action {smooth,stats,dataset,report,bms}
@@ -78,31 +78,31 @@ OPTIONAL ARGUMENTS:
 
 EXAMPLES:
     # Get help
-    python bidspm.py -h
+    python spm_bids_runner.py -h
     
     # Run complete pipeline
-    python bidspm.py --action smooth stats dataset
+    python spm_bids_runner.py --action smooth stats dataset
 
     # Generate HTML reports after processing
-    python bidspm.py --action report
+    python spm_bids_runner.py --action report
 
     # Process then immediately generate reports
-    python bidspm.py --action smooth stats dataset report
+    python spm_bids_runner.py --action smooth stats dataset report
     
     # Pilot test (single random subject)
-    python bidspm.py --action smooth --pilot
+    python spm_bids_runner.py --action smooth --pilot
     
     # Preview commands without running
-    python bidspm.py --action smooth stats --dry-run
+    python spm_bids_runner.py --action smooth stats --dry-run
     
     # Check available subjects
-    python bidspm.py --list-subjects
+    python spm_bids_runner.py --list-subjects
     
     # Estimate time for full run
-    python bidspm.py --action smooth stats --estimate-time
+    python spm_bids_runner.py --action smooth stats --estimate-time
 
 MORE INFORMATION:
-    • GitHub: https://github.com/MRI-Lab-Graz/bidspm
+    • GitHub: https://github.com/MRI-Lab-Graz/spm-bids-runner
     • BIDS-StatsModel: https://bids-standard.github.io/stats-models/
     """
     print(help_text)
@@ -122,7 +122,7 @@ def _at_least_one(text):
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="BIDSPM Runner - Run BIDS-StatsModel pipelines",
+        description="SPM BIDS Runner - Run BIDS-StatsModel pipelines",
         add_help=False
     )
     

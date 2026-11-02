@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from tests.preflight_support import make_trees
 
 BLOCKED = {"verdict": "blocked", "checks": [{"id": "bids_dir", "severity": "error", "subject": None, "message": "m", "fix": "f"}]}
@@ -56,11 +56,11 @@ def _post_run(client, **body):
 
 
 def test_blocked_run_leaves_no_generated_settings(tmp_path):
-    import bidspm_gui
+    import spm_bids_runner_gui
     from lib.project_manager import ProjectManager
     pm = ProjectManager(tmp_path / "projects")
     project = pm.create_project("p", config={"output_folder": str(tmp_path / "out"), "tasks": ["x"]})
-    with patch.object(bidspm_gui, "project_manager", pm), \
+    with patch.object(spm_bids_runner_gui, "project_manager", pm), \
          patch("webapp.web_execution_api.run_preflight_from_config", return_value=BLOCKED):
         res = _post_run(app.test_client(), actions=["stats"], project_id=project.id, subjects_override=["01"])
     assert res.status_code == 400
@@ -68,12 +68,12 @@ def test_blocked_run_leaves_no_generated_settings(tmp_path):
 
 
 def test_model_validation_failure_leaves_no_generated_settings(tmp_path):
-    import bidspm_gui
+    import spm_bids_runner_gui
     from lib.project_manager import ProjectManager
     pm = ProjectManager(tmp_path / "projects")
     project = pm.create_project("p", config={"output_folder": str(tmp_path / "out"), "tasks": ["x"]})
     res_model = tmp_path / "missing.json"
-    with patch.object(bidspm_gui, "project_manager", pm):
+    with patch.object(spm_bids_runner_gui, "project_manager", pm):
         res = _post_run(app.test_client(), actions=["stats"], project_id=project.id, model=str(res_model))
     assert res.status_code == 400
     assert not list(pm.get_project_configs_dir(project.id).glob("run_settings*"))

@@ -5,7 +5,7 @@
 # Analyses run inside the same Docker container as the server — identical results.
 #
 # Usage:
-#   bash setup_apple_silicon.sh              # installs to ~/bidspm
+#   bash setup_apple_silicon.sh              # installs to ~/spm-bids-runner
 #   bash setup_apple_silicon.sh --dir ~/Desktop/bidspm
 #
 # What this script does:
@@ -16,15 +16,15 @@
 #   5. Installs UV and creates a Python virtual environment
 #   6. Installs all Python dependencies
 #   7. Checks Docker Desktop and pulls the bidspm image
-#   8. Writes scripts/activate_bidspm.sh for daily use
+#   8. Writes scripts/activate.sh for daily use
 
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-REPO_URL="https://github.com/MRI-Lab-Graz/bidspm.git"
-DEFAULT_INSTALL_DIR="${HOME}/bidspm"
+REPO_URL="https://github.com/MRI-Lab-Graz/spm-bids-runner.git"
+DEFAULT_INSTALL_DIR="${HOME}/spm-bids-runner"
 DOCKER_IMAGE="ghcr.io/mri-lab-graz/spm-bids-runner:latest"
 
 # ---------------------------------------------------------------------------
@@ -38,7 +38,7 @@ while [[ $# -gt 0 ]]; do
             INSTALL_DIR="$2"; INSTALL_DIR_SET=true; shift 2 ;;
         -h|--help)
             echo "Usage: bash $(basename "$0") [--dir <path>]"
-            echo "  --dir <path>   Installation directory (default: ~/bidspm)"
+            echo "  --dir <path>   Installation directory (default: ~/spm-bids-runner)"
             exit 0 ;;
         *)
             echo "Unknown option: $1  (use --help for usage)"; exit 1 ;;
@@ -155,11 +155,11 @@ else
 fi
 
 # Create the environment: uv's own Python (.python-version) and the packages locked in uv.lock
-if [[ -d ".bidspm" ]]; then
-    warn "Existing .bidspm environment found — recreating."
-    rm -rf .bidspm
+if [[ -d ".venv" ]]; then
+    warn "Existing .venv environment found — recreating."
+    rm -rf .venv
 fi
-UV_PROJECT_ENVIRONMENT=.bidspm "$UV_BIN" sync --managed-python || error "uv sync failed — run this script from the repo root."
+UV_PROJECT_ENVIRONMENT=.venv "$UV_BIN" sync --managed-python || error "uv sync failed — run this script from the repo root."
 success "Virtual environment and Python dependencies installed"
 
 # ---------------------------------------------------------------------------
@@ -210,23 +210,23 @@ step "8/8  Writing activation script"
 
 mkdir -p scripts
 
-cat > scripts/activate_bidspm.sh << 'ACTIVATE_EOF'
+cat > scripts/activate.sh << 'ACTIVATE_EOF'
 #!/bin/bash
 # Activate the BIDSPM environment on Apple Silicon Mac.
-# Usage:  source .bidspm/bin/activate
+# Usage:  source .venv/bin/activate
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-if [[ ! -d "$PROJECT_ROOT/.bidspm" ]]; then
+if [[ ! -d "$PROJECT_ROOT/.venv" ]]; then
     echo "ERROR: Virtual environment not found."
     echo "       Run scripts/setup_apple_silicon.sh first."
     return 1 2>/dev/null || exit 1
 fi
 
-source "$PROJECT_ROOT/.bidspm/bin/activate"
+source "$PROJECT_ROOT/.venv/bin/activate"
 
-export BIDSPM_PROJECT_ROOT="$PROJECT_ROOT"
+export SPM_BIDS_RUNNER_PROJECT_ROOT="$PROJECT_ROOT"
 
 echo ""
 echo "BIDSPM environment activated"
@@ -234,14 +234,14 @@ echo "  Project : $PROJECT_ROOT"
 echo "  Python  : $(which python)"
 echo "  Docker  : $(docker --version 2>/dev/null | head -1 || echo 'not found')"
 echo ""
-echo "Run an analysis:     python bidspm.py --action smooth stats"
-echo "Pilot (1 subject):   python bidspm.py --action smooth --pilot"
-echo "Web interface:       python bidspm_gui.py"
+echo "Run an analysis:     python spm_bids_runner.py --action smooth stats"
+echo "Pilot (1 subject):   python spm_bids_runner.py --action smooth --pilot"
+echo "Web interface:       python spm_bids_runner_gui.py"
 echo "Deactivate:          deactivate"
 ACTIVATE_EOF
 
-chmod +x scripts/activate_bidspm.sh
-success "scripts/activate_bidspm.sh written"
+chmod +x scripts/activate.sh
+success "scripts/activate.sh written"
 
 # ---------------------------------------------------------------------------
 # Done
@@ -255,8 +255,8 @@ echo -e "  Installation path : ${BOLD}${INSTALL_DIR}${NC}"
 echo ""
 echo "  To get started:"
 echo "    cd ${INSTALL_DIR}"
-echo "    source .bidspm/bin/activate"
-echo "    python bidspm.py --action smooth --pilot"
+echo "    source .venv/bin/activate"
+echo "    python spm_bids_runner.py --action smooth --pilot"
 echo ""
 if ! (command -v docker &>/dev/null && docker info &>/dev/null 2>&1); then
     echo -e "  ${YELLOW}Reminder:${NC} Install and start Docker Desktop, then run:"

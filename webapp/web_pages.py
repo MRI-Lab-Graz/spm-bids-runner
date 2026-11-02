@@ -43,7 +43,7 @@ def register_page_routes(app: Flask, get_project_manager: ProjectManagerGetter) 
         """Render analysis page, optionally with a project loaded.
 
         With no project id in the URL, resume the last project opened
-        (tracked in ~/.bidspm/current_project.json) if one still exists.
+        (tracked in ~/.spm-bids-runner/current_project.json) if one still exists.
         """
         manager = get_project_manager()
         if not project_id:

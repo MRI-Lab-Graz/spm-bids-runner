@@ -5,7 +5,7 @@ import pathlib
 
 import pytest
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 
 
 @pytest.fixture

@@ -5,17 +5,17 @@ import time
 import unittest
 from pathlib import Path
 
-import bidspm_gui
+import spm_bids_runner_gui
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 class TestGuiArgs(unittest.TestCase):
     def test_host_defaults_to_loopback(self):
-        self.assertEqual(bidspm_gui.parse_gui_args([]).host, "127.0.0.1")
+        self.assertEqual(spm_bids_runner_gui.parse_gui_args([]).host, "127.0.0.1")
 
     def test_host_can_be_opened_up_explicitly(self):
-        self.assertEqual(bidspm_gui.parse_gui_args(["--host", "0.0.0.0"]).host, "0.0.0.0")
+        self.assertEqual(spm_bids_runner_gui.parse_gui_args(["--host", "0.0.0.0"]).host, "0.0.0.0")
 
 
 @unittest.skipUnless(Path("/proc/net/tcp").exists(), "needs Linux /proc")
@@ -30,8 +30,8 @@ class TestGuiListensOnLoopbackOnly(unittest.TestCase):
         return None
 
     def test_real_server_binds_127_0_0_1(self):
-        port = bidspm_gui.find_free_port(5400)
-        proc = subprocess.Popen([sys.executable, "bidspm_gui.py", "--no-browser", "-p", str(port)],
+        port = spm_bids_runner_gui.find_free_port(5400)
+        proc = subprocess.Popen([sys.executable, "spm_bids_runner_gui.py", "--no-browser", "-p", str(port)],
                                 cwd=str(REPO_ROOT), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         try:
             addr = None

@@ -3,15 +3,15 @@ import json
 
 import pytest
 
-import bidspm_gui
-from bidspm_gui import app
+import spm_bids_runner_gui
+from spm_bids_runner_gui import app
 from lib.project_manager import ProjectManager
 
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     manager = ProjectManager(projects_dir=tmp_path / "projects")
-    monkeypatch.setattr(bidspm_gui, "project_manager", manager)
+    monkeypatch.setattr(spm_bids_runner_gui, "project_manager", manager)
     project = manager.create_project("p", "", {"bids_folder": "/keep/bids", "tasks": ["t"], "fwhm": 8.0, "verbosity": 1})
     return {"manager": manager, "id": project.id, "c": app.test_client(), "tmp": tmp_path}
 

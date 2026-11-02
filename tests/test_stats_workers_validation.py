@@ -3,13 +3,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import bidspm
-import bidspm_gui
+import spm_bids_runner
+import spm_bids_runner_gui
 
 
 def parse(monkeypatch, *argv):
-    monkeypatch.setattr("sys.argv", ["bidspm.py", *argv])
-    return bidspm.parse_arguments()
+    monkeypatch.setattr("sys.argv", ["spm_bids_runner.py", *argv])
+    return spm_bids_runner.parse_arguments()
 
 
 def test_cli_accepts_one_and_more(monkeypatch):
@@ -29,7 +29,7 @@ def test_cli_refuses_a_bad_value_naming_the_option(monkeypatch, capsys, value):
 @pytest.mark.parametrize("value", [0, -5, "x", 1.5, True, [2]])
 def test_run_refuses_a_bad_stats_workers(value):
     with patch("subprocess.Popen") as popen:
-        res = bidspm_gui.app.test_client().post("/run", json={"actions": ["bms"], "stats_workers": value})
+        res = spm_bids_runner_gui.app.test_client().post("/run", json={"actions": ["bms"], "stats_workers": value})
     assert res.status_code == 400 and res.is_json and "stats_workers" in res.get_json()["error"]
     popen.assert_not_called()
 
@@ -37,7 +37,7 @@ def test_run_refuses_a_bad_stats_workers(value):
 def test_run_passes_a_good_stats_workers_on():
     with patch("subprocess.Popen") as popen:
         popen.return_value = MagicMock(pid=1)
-        res = bidspm_gui.app.test_client().post("/run", json={"actions": ["bms"], "stats_workers": 3})
+        res = spm_bids_runner_gui.app.test_client().post("/run", json={"actions": ["bms"], "stats_workers": 3})
     assert res.status_code == 200
     cmd = popen.call_args[0][0]
     assert cmd[cmd.index("--stats-workers") + 1] == "3"

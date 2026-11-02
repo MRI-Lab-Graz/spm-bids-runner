@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-import bidspm
+import spm_bids_runner
 from lib.config import load_config
 from lib.preflight import resolve_tasks, run_preflight_from_config
 from tests.preflight_support import make_trees, write_model
@@ -55,9 +55,9 @@ def _empty_tasks_cfg(tmp_path, monkeypatch):
 
 def test_estimate_time_uses_the_resolved_tasks(tmp_path, monkeypatch):
     path = _empty_tasks_cfg(tmp_path, monkeypatch)
-    with patch.object(bidspm, "estimate_processing_time", side_effect=RuntimeError("stop")) as est:
+    with patch.object(spm_bids_runner, "estimate_processing_time", side_effect=RuntimeError("stop")) as est:
         try:
-            bidspm.handle_estimate_time(str(path), ["stats"])
+            spm_bids_runner.handle_estimate_time(str(path), ["stats"])
         except RuntimeError:
             pass
     assert est.call_args.args[2] == ["x"]
@@ -67,7 +67,7 @@ def test_reports_use_the_resolved_tasks(tmp_path, monkeypatch):
     path = _empty_tasks_cfg(tmp_path, monkeypatch)
     with patch("lib.report_generator.generate_reports", return_value=None) as gen:
         try:
-            bidspm._handle_report(str(path), type("A", (), {"model": None})())
+            spm_bids_runner._handle_report(str(path), type("A", (), {"model": None})())
         except Exception:
             pass
     assert gen.call_args.kwargs["tasks"] == ["x"]

@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from lib.core import validate_bids_model
 from lib.preflight import check_model, run_preflight
 from tests.preflight_support import make_trees, write_model

@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from bidspm_gui import app
+from spm_bids_runner_gui import app
 from lib.core import discover_tasks
 from tests.browser_support import (chromium_available, make_dataset, post_json, start_server, sync_playwright)
 

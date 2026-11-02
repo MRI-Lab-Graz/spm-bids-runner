@@ -6,9 +6,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-import bidspm_gui
+import spm_bids_runner_gui
 from webapp import web_discovery_model_api
-from bidspm_gui import app as flask_app
+from spm_bids_runner_gui import app as flask_app
 from lib.project_manager import ProjectManager
 from webapp.web_execution_api import ExecutionRegistry
 
@@ -23,7 +23,7 @@ class TestWebRoutes(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
         self.project_manager = ProjectManager(Path(self.temp_dir.name) / "projects")
-        self.project_manager_patch = patch.object(bidspm_gui, "project_manager", self.project_manager)
+        self.project_manager_patch = patch.object(spm_bids_runner_gui, "project_manager", self.project_manager)
         self.project_manager_patch.start()
         self.addCleanup(self.project_manager_patch.stop)
         preflight_patch = patch(
@@ -32,7 +32,7 @@ class TestWebRoutes(unittest.TestCase):
         )
         preflight_patch.start()
         self.addCleanup(preflight_patch.stop)
-        self.execution_registry = bidspm_gui.execution_registry
+        self.execution_registry = spm_bids_runner_gui.execution_registry
         self.original_executions = dict(self.execution_registry.executions)
         self.original_current_execution_id = self.execution_registry.current_execution_id
         self.original_current_project_id = self.execution_registry.current_project_id
@@ -58,7 +58,7 @@ class TestWebRoutes(unittest.TestCase):
     def test_footer_github_link_points_at_the_real_repository(self):
         response = self.client.get("/projects")
         text = response.get_data(as_text=True)
-        self.assertIn('href="https://github.com/MRI-Lab-Graz/bidspm"', text)
+        self.assertIn('href="https://github.com/MRI-Lab-Graz/spm-bids-runner"', text)
 
     def test_projects_page_lists_existing_project(self):
         project = self.project_manager.create_project("Demo project", description="study setup")
@@ -85,7 +85,7 @@ class TestWebRoutes(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         text = response.get_data(as_text=True)
-        self.assertIn("Analysis - Motor study - BIDSPM Runner", text)
+        self.assertIn("Analysis - Motor study - SPM BIDS Runner", text)
         self.assertIn(str(bids_dir), text)
         self.assertIn(str(output_dir), text)
         self.assertIn('/static/css/analysis.css', text)

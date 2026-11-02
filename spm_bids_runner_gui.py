@@ -117,12 +117,12 @@ __version__ = tomllib.loads((Path(__file__).parent / "pyproject.toml").read_text
 app.config['APP_VERSION'] = __version__
 
 def resolve_python_executable() -> str:
-    """Resolve which Python interpreter to launch bidspm.py subprocesses with.
+    """Resolve which Python interpreter to launch spm_bids_runner.py subprocesses with.
 
     Priority:
-      1. ``$BIDSPM_PYTHON`` env var, if it points at a real file -- explicit
+      1. ``$SPM_BIDS_RUNNER_PYTHON`` env var, if it points at a real file -- explicit
          override for unusual setups.
-      2. ``.bidspm/bin/python`` (the intended project venv), if it actually
+      2. ``.venv/bin/python`` (the intended project venv), if it actually
          resolves -- a dangling symlink here (e.g. pointing at a since-moved
          system Python) must NOT be silently accepted.
       3. ``sys.executable`` -- the interpreter currently running this server.
@@ -132,11 +132,11 @@ def resolve_python_executable() -> str:
          resolve to an unrelated, dependency-less interpreter.
       4. ``'python3'`` on PATH, only if ``sys.executable`` is somehow empty.
     """
-    env_override = os.environ.get("BIDSPM_PYTHON", "").strip()
+    env_override = os.environ.get("SPM_BIDS_RUNNER_PYTHON", "").strip()
     if env_override and os.path.exists(env_override):
         return env_override
 
-    venv_python = os.path.abspath(".bidspm/bin/python")
+    venv_python = os.path.abspath(".venv/bin/python")
     if os.path.exists(venv_python):
         return venv_python
 
@@ -144,7 +144,7 @@ def resolve_python_executable() -> str:
 
 
 # Execution state
-BIDSPM_SCRIPT = os.path.abspath("bidspm.py")
+RUNNER_SCRIPT = os.path.abspath("spm_bids_runner.py")
 PYTHON_EXE = resolve_python_executable()
 LOG_DIR = GLOBAL_LOG_DIR  # fallback when no project is selected; per-project runs use project_manager
 DEFAULT_PORT = 5100
@@ -228,7 +228,7 @@ def collect_startup_preflight_checks(app_root: Path = APP_ROOT) -> List[Dict[str
         },
         {
             # Surfaces which interpreter run subprocesses use -- a dangling
-            # .bidspm/bin/python symlink silently falling back to some other
+            # .venv/bin/python symlink silently falling back to some other
             # python3 used to be invisible until a run failed with a
             # confusing ModuleNotFoundError deep in a log file.
             'label': f'Python interpreter ({PYTHON_EXE})',
@@ -339,7 +339,7 @@ def _command_of(pid: int) -> str:
 
 
 def kill_existing_on_port(port: int) -> bool:
-    """Stop an old bidspm_gui.py instance listening on the port. Returns True if something was stopped.
+    """Stop an old spm_bids_runner_gui.py instance listening on the port. Returns True if something was stopped.
 
     Any other listener is left alone: the message names it and the process exits (use another --port).
     """
@@ -349,9 +349,9 @@ def kill_existing_on_port(port: int) -> bool:
 
     for pid in pids:
         command = _command_of(pid)
-        if 'bidspm_gui.py' not in command:
+        if 'spm_bids_runner_gui.py' not in command:
             print(f"Error: port {port} is held by PID {pid} ({command or 'unknown command'}), which is not a "
-                  f"bidspm GUI, so it was not stopped. Pick another port: --port N (start_gui.sh: BIDSPM_PORT=N).")
+                  f"bidspm GUI, so it was not stopped. Pick another port: --port N (start_gui.sh: SPM_BIDS_RUNNER_PORT=N).")
             sys.exit(1)
         try:
             os.kill(pid, signal.SIGTERM)
@@ -481,7 +481,7 @@ register_execution_routes(
     get_project_manager=lambda: project_manager,
     normalize_subject_ids=_normalize_subject_ids,
     validate_bids_model=validate_bids_model,
-    bidspm_script=BIDSPM_SCRIPT,
+    runner_script=RUNNER_SCRIPT,
     python_exe_path=PYTHON_EXE,
 )
 register_discovery_model_routes(

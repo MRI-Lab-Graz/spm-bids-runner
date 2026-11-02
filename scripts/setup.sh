@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# setup.sh - Setup script for bidspm-runner
-# This script sets up a Python virtual environment (.bidspm) and installs
+# setup.sh - Setup script for spm-bids-runner
+# This script sets up a Python virtual environment (.venv) and installs
 # dependencies using UV package manager, then configures container execution
 # (Docker or Apptainer).
 
@@ -254,48 +254,48 @@ install_uv() {
 # Create the virtual environment and install everything with uv: uv's own Python (pinned in .python-version,
 # independent of the OS and of FSL) and the packages locked in uv.lock.
 create_venv() {
-    print_status "Creating Python environment '.bidspm' with uv..."
+    print_status "Creating Python environment '.venv' with uv..."
 
-    if [ -d ".bidspm" ]; then
-        print_warning "Existing .bidspm virtual environment found. Removing it..."
-        rm -rf .bidspm
+    if [ -d ".venv" ]; then
+        print_warning "Existing .venv virtual environment found. Removing it..."
+        rm -rf .venv
     fi
 
     # main() runs inside `if main "$@"; then`, which suspends `set -e` for its entire call tree --
     # check the exit status explicitly or a failed install is silently ignored.
-    if ! UV_PROJECT_ENVIRONMENT=.bidspm ./build/uv sync --managed-python; then
+    if ! UV_PROJECT_ENVIRONMENT=.venv ./build/uv sync --managed-python; then
         print_error "uv sync failed (Python download or package install)"
         exit 1
     fi
 
-    print_success "Environment '.bidspm' created"
+    print_success "Environment '.venv' created"
 }
 
 # List what was installed
 install_dependencies() {
     print_status "Installed packages:"
-    ./build/uv pip list --python .bidspm/bin/python
+    ./build/uv pip list --python .venv/bin/python
 }
 
 # Create activation script
 create_activation_script() {
     print_status "Creating activation script..."
 
-    cat > scripts/activate_bidspm.sh << 'EOF'
+    cat > scripts/activate.sh << 'EOF'
 #!/bin/bash
-# Activation script for bidspm-runner environment
+# Activation script for spm-bids-runner environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-if [ ! -d "$PROJECT_ROOT/.bidspm" ]; then
+if [ ! -d "$PROJECT_ROOT/.venv" ]; then
     echo "❌ Virtual environment not found. Please run ./scripts/setup.sh first."
     return 1 2>/dev/null || exit 1
 fi
 
-source "$PROJECT_ROOT/.bidspm/bin/activate"
+source "$PROJECT_ROOT/.venv/bin/activate"
 
-export BIDSPM_PROJECT_ROOT="$PROJECT_ROOT"
+export SPM_BIDS_RUNNER_PROJECT_ROOT="$PROJECT_ROOT"
 
 echo "🚀 BIDSPM environment activated!"
 echo "Project root: $PROJECT_ROOT"
@@ -304,7 +304,7 @@ EOF
 
     # Add platform-specific environment variables
     if [ "$SETUP_APPTAINER" = true ] || [ "$PLATFORM" = "apptainer" ]; then
-        cat >> scripts/activate_bidspm.sh << 'EOF'
+        cat >> scripts/activate.sh << 'EOF'
 
 # Apptainer environment variables (respect pre-set values, e.g. on HPC)
 : "${APPTAINER_CACHEDIR:=$PROJECT_ROOT/.apptainer_cache}"
@@ -316,14 +316,14 @@ echo "📦 Apptainer cache configured: $APPTAINER_CACHEDIR"
 EOF
     fi
 
-    cat >> scripts/activate_bidspm.sh << 'EOF'
+    cat >> scripts/activate.sh << 'EOF'
 
 echo ""
 echo "To deactivate, run: deactivate"
 EOF
 
-    chmod +x scripts/activate_bidspm.sh
-    print_success "Activation script created: ./scripts/activate_bidspm.sh"
+    chmod +x scripts/activate.sh
+    print_success "Activation script created: ./scripts/activate.sh"
 }
 
 # Main setup function
@@ -354,18 +354,18 @@ main() {
     echo ""
     echo "🐳 Container platform: $PLATFORM"
     if [ "$PLATFORM" = "apptainer" ]; then
-        echo "📦 Apptainer cache/temp dirs configured (see ./scripts/activate_bidspm.sh)"
+        echo "📦 Apptainer cache/temp dirs configured (see ./scripts/activate.sh)"
     fi
     echo ""
     echo "🚀 To activate the environment:"
-    echo "  source ./scripts/activate_bidspm.sh"
+    echo "  source ./scripts/activate.sh"
     echo ""
     echo "🧪 To start the GUI:"
     echo "  ./scripts/start_gui.sh"
     echo ""
     echo "🎯 Command line (after activating the environment):"
-    echo "  - Piloting: python bidspm.py --pilot"
-    echo "  - Production: python bidspm.py -s your_config.json"
+    echo "  - Piloting: python spm_bids_runner.py --pilot"
+    echo "  - Production: python spm_bids_runner.py -s your_config.json"
     echo "  - Auto-detection: the script selects the container itself"
     echo ""
 }

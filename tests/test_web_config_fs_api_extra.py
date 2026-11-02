@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from bidspm_gui import app as flask_app
+from spm_bids_runner_gui import app as flask_app
 
 
 class TestCheckPathsRoute(unittest.TestCase):

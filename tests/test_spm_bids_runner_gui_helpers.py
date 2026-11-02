@@ -5,18 +5,18 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-import bidspm_gui
-from bidspm_gui import _build_model_warnings
-from bidspm_gui import _discover_confound_info
-from bidspm_gui import _discover_event_info
-from bidspm_gui import _discover_participants_info
-from bidspm_gui import _extract_model_hints
-from bidspm_gui import _normalize_subject_ids
-from bidspm_gui import _normalize_token_list
-from bidspm_gui import _pids_listening_on_port
-from bidspm_gui import find_free_port
-from bidspm_gui import kill_existing_on_port
-from bidspm_gui import wait_for_http_ready
+import spm_bids_runner_gui
+from spm_bids_runner_gui import _build_model_warnings
+from spm_bids_runner_gui import _discover_confound_info
+from spm_bids_runner_gui import _discover_event_info
+from spm_bids_runner_gui import _discover_participants_info
+from spm_bids_runner_gui import _extract_model_hints
+from spm_bids_runner_gui import _normalize_subject_ids
+from spm_bids_runner_gui import _normalize_token_list
+from spm_bids_runner_gui import _pids_listening_on_port
+from spm_bids_runner_gui import find_free_port
+from spm_bids_runner_gui import kill_existing_on_port
+from spm_bids_runner_gui import wait_for_http_ready
 
 
 class TestBidspmGuiHelpers(unittest.TestCase):
@@ -36,23 +36,23 @@ class TestBidspmGuiHelpers(unittest.TestCase):
         fake_context.__enter__.return_value = fake_response
         fake_context.__exit__.return_value = False
 
-        with patch("bidspm_gui.urllib.request.urlopen", side_effect=[Exception("down"), fake_context]):
+        with patch("spm_bids_runner_gui.urllib.request.urlopen", side_effect=[Exception("down"), fake_context]):
             self.assertTrue(wait_for_http_ready("http://localhost:5100", timeout=1.0, interval=0.01))
 
-        with patch("bidspm_gui.urllib.request.urlopen", side_effect=Exception("down")):
+        with patch("spm_bids_runner_gui.urllib.request.urlopen", side_effect=Exception("down")):
             self.assertFalse(wait_for_http_ready("http://localhost:5100", timeout=0.05, interval=0.01))
 
     def test_pid_helpers_parse_and_kill_processes(self):
         with patch(
-            "bidspm_gui.subprocess.run",
+            "spm_bids_runner_gui.subprocess.run",
             return_value=SimpleNamespace(stdout="LISTEN 0 128 *:5100 *:* users:((\"python\",pid=1234,fd=5),(\"python\",pid=5678,fd=6))"),
         ):
             self.assertEqual(_pids_listening_on_port(5100), [1234, 5678])
 
-        with patch("bidspm_gui.os.getpid", return_value=9999), \
-             patch("bidspm_gui._pids_listening_on_port", side_effect=[[1111, 2222], [], []]), \
-             patch("bidspm_gui._command_of", return_value="python bidspm_gui.py"), \
-             patch("bidspm_gui.os.kill") as mock_kill:
+        with patch("spm_bids_runner_gui.os.getpid", return_value=9999), \
+             patch("spm_bids_runner_gui._pids_listening_on_port", side_effect=[[1111, 2222], [], []]), \
+             patch("spm_bids_runner_gui._command_of", return_value="python spm_bids_runner_gui.py"), \
+             patch("spm_bids_runner_gui.os.kill") as mock_kill:
             self.assertTrue(kill_existing_on_port(5100))
 
         self.assertEqual(mock_kill.call_count, 2)

@@ -83,7 +83,7 @@ class TestExecutionRegistryExtra(unittest.TestCase):
 
     def test_cleanup_old_executions_deletes_generated_settings_files(self):
         # Each /run call can auto-generate a run_settings_*.json scratch
-        # file; without this, those accumulate forever in ~/.bidspm/config
+        # file; without this, those accumulate forever in ~/.spm-bids-runner/config
         # or a project's configs/ dir, one per run.
         settings_file = Path(self.temp_dir.name) / "run_settings_old.json"
         settings_file.write_text("{}", encoding="utf-8")

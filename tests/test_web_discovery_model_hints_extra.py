@@ -12,7 +12,7 @@ from webapp.web_discovery_model_api import (
 
 class TestExtractModelHintsMalformedNodes(unittest.TestCase):
     """Covers per-node malformed-shape branches not hit by the happy-path /
-    top-level-invalid-shape tests in tests/test_bidspm_gui_helpers.py."""
+    top-level-invalid-shape tests in tests/test_spm_bids_runner_gui_helpers.py."""
 
     def test_task_as_bare_string_is_wrapped_in_a_list(self):
         hints = _extract_model_hints({"Input": {"task": "motor"}, "Nodes": []})

@@ -1,7 +1,7 @@
 # Student walkthrough: from raw data to a group result
 
 This walkthrough takes one real study (study 141, task `crom`, fMRIPrep output in MNI152NLin2009cAsym space) through
-the whole BIDSPM Runner GUI: create a project, build a model with the wizard, check readiness, run
+the whole SPM BIDS Runner GUI: create a project, build a model with the wizard, check readiness, run
 smooth + stats + dataset, and look at the outputs. It was done for real, on a scratch copy of three subjects
 (`sub-141A332C`, `sub-141A891C`, `sub-141B201C`), in a fresh clone following the README. The paths in the screenshots
 (`/data/local/tmp_big/walkthrough/...`) are that scratch copy; yours will differ.
@@ -16,12 +16,12 @@ smoothing about 1 minute, model estimation about 28 minutes, group level a few s
 ## 1. Install and start
 
 ```bash
-git clone https://github.com/MRI-Lab-Graz/bidspm.git
-cd bidspm
+git clone https://github.com/MRI-Lab-Graz/spm-bids-runner.git
+cd spm-bids-runner
 # the image: pull it once it is published, or build it (5 minutes cold, needs internet)
 docker build -f containers/dockerfile/dockerfile -t ghcr.io/mri-lab-graz/spm-bids-runner:latest .
-./scripts/setup.sh        # uv builds .bidspm (own Python 3.12 + the packages); about 5 s with a warm uv cache
-./scripts/start_gui.sh    # port 5100; BIDSPM_PORT=5101 ./scripts/start_gui.sh if it is taken
+./scripts/setup.sh        # uv builds .venv (own Python 3.12 + the packages); about 5 s with a warm uv cache
+./scripts/start_gui.sh    # port 5100; SPM_BIDS_RUNNER_PORT=5101 ./scripts/start_gui.sh if it is taken
 ```
 
 The start script prints a "Pre-flight check" and then `Open in browser: http://localhost:5100`. On a server over SSH, forward
@@ -124,7 +124,7 @@ which do not stop a run. Errors would block Run and name the subject and file. W
 ## 7. Save & Run
 
 "Save & Run" saves the project and starts the run. The terminal log follows it live. The command line it runs is printed
-first (`bidspm.py --action smooth stats dataset ...`), so you can repeat the same run without the GUI.
+first (`spm_bids_runner.py --action smooth stats dataset ...`), so you can repeat the same run without the GUI.
 
 ![Run started](walkthrough/13_run_started.png)
 

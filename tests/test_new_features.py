@@ -4,8 +4,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from bidspm_gui import app as flask_app
-from bidspm_gui import collect_startup_preflight_checks, open_browser_when_ready
+from spm_bids_runner_gui import app as flask_app
+from spm_bids_runner_gui import collect_startup_preflight_checks, open_browser_when_ready
 from lib.core import Pipeline, PipelineOptions
 from lib.project_manager import ProjectManager
 
@@ -218,7 +218,7 @@ class TestNewFeatures(unittest.TestCase):
     def test_open_browser_when_ready_uses_browser_handler(self):
         url = "http://localhost:5100"
 
-        with patch("bidspm_gui.wait_for_http_ready", return_value=True), \
+        with patch("spm_bids_runner_gui.wait_for_http_ready", return_value=True), \
              patch("webbrowser.open", return_value=True) as mock_open:
             opened, message = open_browser_when_ready(url)
 

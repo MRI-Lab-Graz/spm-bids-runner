@@ -1,6 +1,6 @@
 """Opt-in smoke test of a *built* image, run as an arbitrary host uid (the way the pipeline runs it).
 
-    BIDSPM_TEST_IMAGE=spm-bids-runner:coldtest python -m pytest tests/test_image_smoke.py
+    SPM_BIDS_RUNNER_TEST_IMAGE=spm-bids-runner:coldtest python -m pytest tests/test_image_smoke.py
 
 Catches what Dockerfile text checks cannot: files the image tries to write at run time.
 """
@@ -9,10 +9,10 @@ import shutil
 import subprocess
 import unittest
 
-IMAGE = os.environ.get("BIDSPM_TEST_IMAGE")
+IMAGE = os.environ.get("SPM_BIDS_RUNNER_TEST_IMAGE")
 
 
-@unittest.skipUnless(IMAGE and shutil.which("docker"), "set BIDSPM_TEST_IMAGE to a built image")
+@unittest.skipUnless(IMAGE and shutil.which("docker"), "set SPM_BIDS_RUNNER_TEST_IMAGE to a built image")
 class TestImageRunsAsForeignUid(unittest.TestCase):
     def test_init_as_arbitrary_uid_has_no_errors(self):
         out = subprocess.run(
@@ -26,7 +26,7 @@ class TestImageRunsAsForeignUid(unittest.TestCase):
             self.assertNotIn(bad, text.replace("error: ignoring const", ""), bad)
 
 
-@unittest.skipUnless(IMAGE and shutil.which("docker"), "set BIDSPM_TEST_IMAGE to a built image")
+@unittest.skipUnless(IMAGE and shutil.which("docker"), "set SPM_BIDS_RUNNER_TEST_IMAGE to a built image")
 class TestImageAveragesRuns(unittest.TestCase):
     """The BUILT image (no mounted overrides) must average a condition over runs: 2 runs -> 0.5 each."""
 

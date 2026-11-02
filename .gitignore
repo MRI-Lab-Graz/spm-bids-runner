@@ -4,7 +4,7 @@
 
 # Python environments
 config/
-.bidspm/
+.venv/
 venv/
 env/
 ENV/
@@ -71,7 +71,7 @@ MANIFEST
 
 # Log files
 *.log
-run_bidspm.log
+run_spm_bids_runner.log
 model_*.log
 
 # Configuration files (keep examples but ignore actual configs).
@@ -162,7 +162,7 @@ Thumbs.db
 script_*.js
 temp_script_*.js
 extracted_scripts.txt
-bidspm_runner.egg-info/
+spm_bids_runner.egg-info/
 
 # Data directories (typically large, should be specified separately)
 data/
@@ -185,3 +185,6 @@ bidspm_local_smooth_141T271A_crom.m
 # Apptainer scratch dirs created by scripts/setup.sh
 .apptainer_tmp/
 .apptainer_cache/
+
+# venv of checkouts made before the rename
+.bidspm/

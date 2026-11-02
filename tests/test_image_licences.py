@@ -73,14 +73,14 @@ class TestNoticeAndLabels(unittest.TestCase):
         notice = (LICENSES / "NOTICE").read_text(encoding="utf-8")
         for needle in ("bidspm", "Remi Gau", "Wellcome Centre for Human Neuroimaging", "GNU Octave",
                        "MRI-Lab Graz", "University of Graz", "https://github.com/spm/spm", "26.10.01",
-                       "https://github.com/cpp-lln-lab/bidspm", "v4.0.0", "https://github.com/MRI-Lab-Graz/bidspm",
+                       "https://github.com/cpp-lln-lab/bidspm", "v4.0.0", "https://github.com/MRI-Lab-Graz/spm-bids-runner",
                        "corresponding source", "GPL-3.0"):
             self.assertIn(needle, notice, needle)
 
     def test_oci_labels(self):
         labels = dict(re.findall(r'(org\.opencontainers\.image\.\w+)="([^"]*)"', DOCKERFILE))
         self.assertEqual(labels.get("org.opencontainers.image.title"), "spm-bids-runner")
-        self.assertEqual(labels.get("org.opencontainers.image.source"), "https://github.com/MRI-Lab-Graz/bidspm")
+        self.assertEqual(labels.get("org.opencontainers.image.source"), "https://github.com/MRI-Lab-Graz/spm-bids-runner")
         self.assertEqual(labels.get("org.opencontainers.image.licenses"), "GPL-3.0-only")
         self.assertEqual(labels.get("org.opencontainers.image.version"), "${IMAGE_VERSION}")
         for key in ("description", "vendor", "documentation"):

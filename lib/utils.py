@@ -18,7 +18,7 @@ from typing import Any, Callable, Dict, Optional, Sequence
 from lib.data_dir import DATA_DIR
 
 LOG_DIR = DATA_DIR / "logs"  # global fallback; project-scoped runs use project_manager instead
-LOG_FILE = str(LOG_DIR / "run_bidspm.log")
+LOG_FILE = str(LOG_DIR / "run_spm_bids_runner.log")
 DEBUG = False
 
 
@@ -364,7 +364,7 @@ def ensure_derivatives_dataset_description(derivatives_dir: Path):
             "DatasetType": "derivative",
             "GeneratedBy": [
                 {
-                    "Name": "bidspm-runner",
+                    "Name": "spm-bids-runner",
                     "Version": "1.0.0",
                     "Description": "Minimal dataset description to satisfy BIDS validation"
                 }

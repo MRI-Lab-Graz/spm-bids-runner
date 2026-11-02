@@ -1,8 +1,8 @@
 """Project create/PUT type-check the config like the import does; bad bodies are 400 JSON, never 500."""
 import pytest
 
-import bidspm_gui
-from bidspm_gui import app
+import spm_bids_runner_gui
+from spm_bids_runner_gui import app
 from lib.project_manager import ProjectManager
 from webapp.web_projects_api import _build_project_preflight_results
 
@@ -10,7 +10,7 @@ from webapp.web_projects_api import _build_project_preflight_results
 @pytest.fixture
 def env(tmp_path, monkeypatch):
     manager = ProjectManager(projects_dir=tmp_path / "projects")
-    monkeypatch.setattr(bidspm_gui, "project_manager", manager)
+    monkeypatch.setattr(spm_bids_runner_gui, "project_manager", manager)
     project = manager.create_project("p", "", {"bids_folder": "/keep/bids", "fwhm": 8.0})
     return {"manager": manager, "id": project.id, "c": app.test_client()}
 

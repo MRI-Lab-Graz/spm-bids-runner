@@ -1,5 +1,5 @@
 [project]
-name = "bidspm-runner"
+name = "spm-bids-runner"
 version = "2.1.1"
 description = "Run bidspm (SPM/Octave in containers) on BIDS datasets from a CLI or a local web GUI"
 requires-python = ">=3.11"

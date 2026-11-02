@@ -1,6 +1,6 @@
 // analysis_preflight.js -- readiness panel: calls /api/preflight and renders the report. Logic lives in lib/preflight.py.
 // Relies on globals: currentProjectId, unifiedStudyConfig, updateInternalState (all used at call time).
-const VALIDATOR_KEY = `bidspm_validator_mode_${currentProjectId}`;
+const VALIDATOR_KEY = `spm_bids_runner_validator_mode_${currentProjectId}`;
 
 function validatorMode() {
     return document.getElementById('validator-mode')?.value || 'auto';

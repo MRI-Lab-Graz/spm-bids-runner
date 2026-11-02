@@ -1,4 +1,4 @@
-"""End-to-end smoke test: boots the real bidspm_gui.py entrypoint as a
+"""End-to-end smoke test: boots the real spm_bids_runner_gui.py entrypoint as a
 subprocess (not the in-process Flask test client used by the rest of the
 suite) and probes it the way a researcher's first visit would. This is
 exactly the manual check used when assessing whether the GUI actually
@@ -32,7 +32,7 @@ class TestGuiSmoke(unittest.TestCase):
         cls.port = _find_free_port()
         cls.base_url = f"http://127.0.0.1:{cls.port}"
         cls.process = subprocess.Popen(
-            [sys.executable, "bidspm_gui.py", "--no-browser", "-p", str(cls.port)],
+            [sys.executable, "spm_bids_runner_gui.py", "--no-browser", "-p", str(cls.port)],
             cwd=str(REPO_ROOT),
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -48,7 +48,7 @@ class TestGuiSmoke(unittest.TestCase):
             except Exception:
                 pass
             raise RuntimeError(
-                f"bidspm_gui.py did not become ready on {cls.base_url} within timeout.\n"
+                f"spm_bids_runner_gui.py did not become ready on {cls.base_url} within timeout.\n"
                 f"Process output:\n{output}"
             )
 

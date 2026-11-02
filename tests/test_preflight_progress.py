@@ -224,7 +224,7 @@ def test_cli_progress_writes_counters_to_stderr_and_pure_json_to_stdout(tmp_path
     bids, fmriprep = make_trees(tmp_path, subjects=("01", "02"))
     cfg = tmp_path / "cfg.json"
     cfg.write_text(json.dumps({"BIDS_DIR": str(bids), "FMRIPREP_DIR": str(fmriprep), "SPACE": "MNI", "TASKS": ["x"], "MODELS_FILE": ""}))
-    proc = subprocess.run([sys.executable, "bidspm.py", "--preflight", "--skip-validator", "--progress", "-s", str(cfg)],
+    proc = subprocess.run([sys.executable, "spm_bids_runner.py", "--preflight", "--skip-validator", "--progress", "-s", str(cfg)],
                           cwd=ROOT, capture_output=True, text=True)
     assert json.loads(proc.stdout)["verdict"] == "warnings"
     assert "sub-01" in proc.stderr and "[1/2]" in proc.stderr and "[2/2]" in proc.stderr
@@ -232,7 +232,7 @@ def test_cli_progress_writes_counters_to_stderr_and_pure_json_to_stdout(tmp_path
 
 def test_cli_progress_writer_failures_never_break_the_json_on_stdout(tmp_path, capsys, monkeypatch):
     import argparse
-    import bidspm
+    import spm_bids_runner
 
     class Broken:
         def write(self, text):
@@ -246,7 +246,7 @@ def test_cli_progress_writer_failures_never_break_the_json_on_stdout(tmp_path, c
     monkeypatch.setattr(sys, "stderr", Broken())
     args = argparse.Namespace(model="", skip_validator=True, validator="skip", action=None, progress=True)
     with pytest.raises(SystemExit) as exit_:
-        bidspm.handle_preflight(str(cfg), args)
+        spm_bids_runner.handle_preflight(str(cfg), args)
     assert exit_.value.code == 0
     assert json.loads(capsys.readouterr().out)["verdict"] == "warnings"
 
@@ -255,11 +255,11 @@ def test_cli_progress_lines_read_well_and_progress_without_preflight_warns(tmp_p
     bids, fmriprep = make_trees(tmp_path)
     cfg = tmp_path / "cfg.json"
     cfg.write_text(json.dumps({"BIDS_DIR": str(bids), "FMRIPREP_DIR": str(fmriprep), "SPACE": "MNI", "TASKS": ["x"], "MODELS_FILE": ""}))
-    proc = subprocess.run([sys.executable, "bidspm.py", "--preflight", "--skip-validator", "--progress", "-s", str(cfg)],
+    proc = subprocess.run([sys.executable, "spm_bids_runner.py", "--preflight", "--skip-validator", "--progress", "-s", str(cfg)],
                           cwd=ROOT, capture_output=True, text=True)
     assert "done done" not in proc.stderr and "verdict: warnings" in proc.stderr
     assert "checking the folders" in proc.stderr
-    proc = subprocess.run([sys.executable, "bidspm.py", "--progress", "--list-tasks", "-s", str(cfg)],
+    proc = subprocess.run([sys.executable, "spm_bids_runner.py", "--progress", "--list-tasks", "-s", str(cfg)],
                           cwd=ROOT, capture_output=True, text=True)
     assert "--progress" in proc.stderr and "--preflight" in proc.stderr
 

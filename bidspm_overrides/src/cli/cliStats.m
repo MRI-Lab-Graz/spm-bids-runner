@@ -31,7 +31,7 @@ function cliStats(varargin)
   estimate = strcmp(action, 'stats');
   contrasts = ismember(action, {'stats', 'contrasts'});
   results = ismember(action, {'stats', 'contrasts', 'results'});
-  % BIDSPM_SKIP_RESULTS (set by bidspm.py --skip-results): the SPM Results export is optional
+  % BIDSPM_SKIP_RESULTS (set by spm_bids_runner.py --skip-results): the SPM Results export is optional
   if ~isempty(getenv('BIDSPM_SKIP_RESULTS'))
     results = false;
   end

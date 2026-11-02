@@ -4,7 +4,7 @@ Upstream bidspm gives every run's regressor the full weight, so a 3-run subject'
 3x that of a 1-run subject (verified on study 132: c = 1,1,1). Group models then mix scales.
 Opt-in like test_image_smoke (needs the built image; the override files are mounted over the image's copies):
 
-    BIDSPM_TEST_IMAGE=<your-built-image> python -m pytest tests/test_run_averaging_override.py
+    SPM_BIDS_RUNNER_TEST_IMAGE=<your-built-image> python -m pytest tests/test_run_averaging_override.py
 """
 import json
 import os
@@ -14,7 +14,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-IMAGE = os.environ.get("BIDSPM_TEST_IMAGE")
+IMAGE = os.environ.get("SPM_BIDS_RUNNER_TEST_IMAGE")
 OVR = Path(__file__).resolve().parent.parent / "bidspm_overrides" / "src" / "stats" / "subject_level"
 IN_IMAGE = "/home/neuro/bidspm/src/stats/subject_level"
 RUN = {"Level": "Run", "Name": "run_level", "GroupBy": ["run", "subject"],
@@ -70,7 +70,7 @@ FACES = {"Level": "Run", "Name": "run_level", "GroupBy": ["run", "subject"],
          "DummyContrasts": {"Test": "t"}}
 
 
-@unittest.skipUnless(IMAGE and shutil.which("docker"), "set BIDSPM_TEST_IMAGE to a built image")
+@unittest.skipUnless(IMAGE and shutil.which("docker"), "set SPM_BIDS_RUNNER_TEST_IMAGE to a built image")
 class TestRunAveraging(unittest.TestCase):
     def test_explicit_subject_contrast_averages_over_runs(self):
         con = _contrasts({"Level": "Subject", "Name": "subject_level", "GroupBy": ["subject", "contrast"],

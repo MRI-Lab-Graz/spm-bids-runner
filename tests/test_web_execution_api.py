@@ -4,24 +4,24 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import bidspm_gui
+import spm_bids_runner_gui
 from lib.project_manager import ProjectManager
 
 
 class TestRunEndpointBmsModels(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        bidspm_gui.app.config.update(TESTING=True)
-        cls.client = bidspm_gui.app.test_client()
+        spm_bids_runner_gui.app.config.update(TESTING=True)
+        cls.client = spm_bids_runner_gui.app.test_client()
 
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
         pm = ProjectManager(Path(self.temp_dir.name) / 'projects')
-        self._pm_patch = patch.object(bidspm_gui, 'project_manager', pm)
+        self._pm_patch = patch.object(spm_bids_runner_gui, 'project_manager', pm)
         self._pm_patch.start()
         self.addCleanup(self._pm_patch.stop)
-        reg = bidspm_gui.execution_registry
+        reg = spm_bids_runner_gui.execution_registry
         self._orig = (dict(reg.executions), reg.current_execution_id, reg.current_project_id)
         reg.executions.clear()
         reg.current_execution_id = None
