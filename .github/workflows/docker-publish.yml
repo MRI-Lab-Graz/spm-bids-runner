@@ -18,11 +18,22 @@ env:
   IMAGE: ghcr.io/mri-lab-graz/spm-bids-runner
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+  build:
+    name: build ${{ matrix.arch }}
+    # One native runner per architecture, no emulation (the arm64 runner is free for public repos).
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
+    env:
+      ARCH_TAG: ${{ inputs.version }}-${{ matrix.arch }}
 
     steps:
       - name: Checkout
@@ -38,22 +49,57 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Determine image tags
-        id: tags
-        run: |
-          TAGS="${IMAGE}:${{ inputs.version }}"
-          if [ "${{ inputs.latest }}" = "true" ]; then TAGS="${TAGS},${IMAGE}:latest"; fi
-          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
-          echo "Publishing: ${TAGS}"
-
+      # Built into the local image store only: nothing reaches GHCR until the smoke test passed.
       # OCI labels (title, licences, source, upstream versions) come from the Dockerfile itself.
-      - name: Build and push
+      - name: Build
         uses: docker/build-push-action@v6
         with:
           context: .
           file: containers/dockerfile/dockerfile
-          push: true
-          tags: ${{ steps.tags.outputs.tags }}
+          load: true
+          provenance: false
+          tags: ${{ env.IMAGE }}:${{ env.ARCH_TAG }}
           build-args: |
             IMAGE_VERSION=${{ inputs.version }}
             GIT_REVISION=${{ github.sha }}
+
+      - name: Smoke test the built image
+        shell: bash
+        env:
+          SPM_BIDS_RUNNER_TEST_IMAGE: ${{ env.IMAGE }}:${{ env.ARCH_TAG }}
+        run: |
+          python3 -m unittest -v tests.test_image_smoke 2>&1 | tee smoke.log
+          if grep -q skipped smoke.log; then echo "the smoke test was skipped, so it proved nothing"; exit 1; fi
+
+      - name: Push ${{ matrix.arch }}
+        run: docker push "${IMAGE}:${ARCH_TAG}"
+
+  merge:
+    name: publish the multi-arch tags
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create the multi-arch tags
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          LATEST: ${{ inputs.latest }}
+        run: |
+          TAGS=(-t "${IMAGE}:${VERSION}")
+          if [ "${LATEST}" = "true" ]; then TAGS+=(-t "${IMAGE}:latest"); fi
+          docker buildx imagetools create "${TAGS[@]}" "${IMAGE}:${VERSION}-amd64" "${IMAGE}:${VERSION}-arm64"
+          docker buildx imagetools inspect "${IMAGE}:${VERSION}"
