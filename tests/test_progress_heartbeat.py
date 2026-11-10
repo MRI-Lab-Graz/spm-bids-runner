@@ -43,3 +43,30 @@ class TestRunCommandHeartbeat(unittest.TestCase):
         with patch.object(utils, "HEARTBEAT_SECONDS", 1):
             ok, _ = _capture(lambda: utils.run_command(cmd))
         self.assertFalse(ok)
+
+
+import time
+from concurrent.futures import ThreadPoolExecutor
+
+import lib.fast_smooth as fs
+
+
+class TestSmoothHeartbeat(unittest.TestCase):
+    """ThreadPoolExecutor stands in for the process pool so the patched worker is visible (spawn on macOS)."""
+
+    def _run(self):
+        def slow(config, subject, task, force):
+            time.sleep(2.5 if subject == "02" else 0.1)
+            return {"status": "ok", "message": ""}
+        with patch.object(fs, "ProcessPoolExecutor", ThreadPoolExecutor), \
+                patch.object(fs, "smooth_subject", slow), \
+                patch.object(utils, "HEARTBEAT_SECONDS", 1):
+            return _capture(lambda: fs.smooth_subjects_parallel(None, ["01", "02"], "t", max_workers=2))
+
+    def test_prints_still_smoothing_while_a_subject_is_pending(self):
+        _, out = self._run()
+        self.assertIn("still smoothing 1 of 2 subject(s)", out)
+
+    def test_results_are_unchanged(self):
+        results, _ = self._run()
+        self.assertEqual(results, {"01": {"status": "ok", "message": ""}, "02": {"status": "ok", "message": ""}})

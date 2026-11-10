@@ -23,7 +23,8 @@ verifies the written file matches the input before returning success.
 import gzip
 import json
 import shutil
-from concurrent.futures import ProcessPoolExecutor, as_completed
+import time
+from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -31,6 +32,7 @@ import nibabel as nib
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
+from . import utils
 from .config import Config
 
 FWHM_TO_SIGMA = 1.0 / (2.0 * (2.0 * np.log(2.0)) ** 0.5)  # ~0.42466
@@ -324,11 +326,19 @@ def smooth_subjects_parallel(config: Config, subjects: List[str], task: str,
             executor.submit(smooth_subject, config, subject, task, force): subject
             for subject in subjects
         }
-        for future in as_completed(futures):
-            subject = futures[future]
-            try:
-                results[subject] = future.result()
-            except Exception as exc:
-                results[subject] = {"status": "error", "message": str(exc)}
+        started = time.monotonic()
+        pending = set(futures)
+        while pending:
+            done, pending = wait(pending, timeout=utils.HEARTBEAT_SECONDS, return_when=FIRST_COMPLETED)
+            if not done:
+                print(f"⏳ still smoothing {len(pending)} of {len(futures)} subject(s), "
+                      f"{utils.fmt_elapsed(time.monotonic() - started)} elapsed "
+                      "(copying/decompressing and smoothing large files takes a while)", flush=True)
+            for future in done:
+                subject = futures[future]
+                try:
+                    results[subject] = future.result()
+                except Exception as exc:
+                    results[subject] = {"status": "error", "message": str(exc)}
 
     return results
