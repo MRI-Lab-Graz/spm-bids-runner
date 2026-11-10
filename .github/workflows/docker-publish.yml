@@ -17,6 +17,11 @@ env:
   # = lib/config.py DEFAULT_DOCKER_IMAGE without its tag (tests/test_default_image.py keeps them in sync)
   IMAGE: ghcr.io/mri-lab-graz/spm-bids-runner
 
+# Two dispatches of one version would race on the per-arch tags: queue them, never cancel a push midway.
+concurrency:
+  group: publish-${{ inputs.version }}
+  cancel-in-progress: false
+
 jobs:
   build:
     name: build ${{ matrix.arch }}
@@ -36,6 +41,18 @@ jobs:
       ARCH_TAG: ${{ inputs.version }}-${{ matrix.arch }}
 
     steps:
+      # Fails before anything is built or pushed (merge needs build): a bare `latest` would otherwise
+      # create IMAGE:latest even with the box unticked, and anything else would reach the docker tags unchecked.
+      - name: Check the version
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "version must look like v2.2.0 or v2.2.0-rc1, got: $VERSION"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 

@@ -23,6 +23,9 @@ def _script(name):
     return _step(name).split("run:", 1)[1]
 
 
+VERSION_RE = "^v[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?$"
+
+
 class TestMultiArchPublish(unittest.TestCase):
     def test_one_native_runner_per_architecture(self):
         self.assertRegex(WORKFLOW, r"arch: amd64\n\s+runner: ubuntu-latest")
@@ -40,6 +43,7 @@ class TestMultiArchPublish(unittest.TestCase):
         self.assertIn("grep -q skipped smoke.log", script)
         self.assertIn("exit 1", script)
         self.assertNotIn("! grep", script)                # `!` is exempt from `set -e`, the step would still pass
+        self.assertIn("shell: bash", _step("Smoke test the built image"))   # bash = pipefail, so `| tee` cannot mask a failing unittest
 
     def test_per_arch_tags_are_plain_manifests(self):
         self.assertIn("provenance: false", WORKFLOW)      # no attestation entries to confuse imagetools create
@@ -57,6 +61,26 @@ class TestMultiArchPublish(unittest.TestCase):
     def test_inputs_reach_scripts_through_env_not_by_interpolation(self):
         for name in ("Smoke test the built image", "Push", "Create the multi-arch tags"):
             self.assertNotIn("${{", _script(name), name)
+
+    def test_the_version_is_validated_before_anything_else(self):
+        step = _step("Check the version")
+        self.assertLess(WORKFLOW.index("- name: Check the version"), WORKFLOW.index("- name: Checkout"))
+        self.assertIn("shell: bash", step)
+        script = _script("Check the version")
+        self.assertIn(VERSION_RE, script)
+        self.assertIn("exit 1", script)
+        self.assertNotIn("${{", script)
+
+    def test_the_version_pattern_accepts_only_real_versions(self):
+        pattern = re.search(r"\[\[ \"\$VERSION\" =~ (\S+) \]\]", _script("Check the version")).group(1)
+        for ok in ("v2.2.0", "v2.2.0-rc1"):
+            self.assertRegex(ok, f"^(?:{pattern})$", ok)
+        for bad in ("latest", "v2.1", "2.2.0", "v2.2.0 -t x", "v2.2.0/../x", ""):
+            self.assertNotRegex(bad, f"^(?:{pattern})$", repr(bad))
+
+    def test_one_publish_run_per_version(self):
+        self.assertIn("group: publish-${{ inputs.version }}", WORKFLOW)
+        self.assertIn("cancel-in-progress: false", WORKFLOW)
 
 
 README = (Path(__file__).resolve().parent.parent / "README.md").read_text(encoding="utf-8")
