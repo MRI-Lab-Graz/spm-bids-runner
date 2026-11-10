@@ -151,6 +151,34 @@ class TestKillExistingOnPort(unittest.TestCase):
         self.assertFalse(result)
 
 
+class TestForeignListenerMessage(unittest.TestCase):
+    """A student whose port is taken must be told what holds it and what to type next, not shown a process dump."""
+
+    VSCODE = ("/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/"
+              "Code Helper (Plugin)")
+
+    def _refusal(self, program):
+        buf = io.StringIO()
+        with patch("spm_bids_runner_gui._pids_listening_on_port", return_value=[2261]), \
+             patch("spm_bids_runner_gui._command_of", return_value=f"{program} --type=utility --inspect-port=0 --user-data-dir=/Users/x"), \
+             patch("spm_bids_runner_gui._program_of", return_value=program), \
+             redirect_stdout(buf), self.assertRaises(SystemExit) as cm:
+            kill_existing_on_port(5100)
+        self.assertEqual(cm.exception.code, 1)
+        return buf.getvalue()
+
+    def test_names_the_program_and_pid_without_the_command_line_and_gives_a_copyable_fix(self):
+        out = self._refusal(self.VSCODE)
+        self.assertIn("Code Helper (Plugin)", out)
+        self.assertIn("2261", out)
+        self.assertNotIn("--inspect-port", out)
+        self.assertIn("SPM_BIDS_RUNNER_PORT=5101 ./scripts/start_gui.sh", out)
+
+    def test_vscode_gets_the_ports_tab_hint_other_programs_do_not(self):
+        self.assertIn("Ports", self._refusal(self.VSCODE))
+        self.assertNotIn("Ports", self._refusal("/usr/sbin/postgres"))
+
+
 class TestBidsDirHelpers(unittest.TestCase):
     def test_get_all_bids_dirs_collects_configured_folders(self):
         fake_project = type("P", (), {"config": type("C", (), {"bids_folder": "/data/bids"})()})()
