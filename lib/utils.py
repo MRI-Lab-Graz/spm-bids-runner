@@ -416,17 +416,32 @@ _GB_PER_STATS_WORKER = 4   # a heavy first-level estimation peaks around 2-4 GB 
 _MAX_SUGGESTED_WORKERS = 16  # untested beyond this on shared disks
 
 
-def system_resources() -> Dict[str, Optional[float]]:
-    """CPU count and available memory (GB); memory is None where /proc/meminfo is missing."""
-    mem = None
+def _proc_mem_available_gb() -> Optional[float]:
+    """Available memory from /proc/meminfo; None on macOS and wherever it is missing."""
     try:
         for line in Path("/proc/meminfo").read_text().splitlines():
             if line.startswith("MemAvailable:"):
-                mem = int(line.split()[1]) / 1024 / 1024
-                break
+                return int(line.split()[1]) / 1024 / 1024
     except (OSError, ValueError):
         pass
-    return {"cpus": os.cpu_count(), "mem_available_gb": mem}
+    return None
+
+
+def docker_memory_gb() -> Optional[float]:
+    """Memory Docker can give its containers (on macOS/Windows the Docker Desktop VM, a fraction of the machine); None if unknown."""
+    if not shutil.which("docker"):
+        return None
+    try:
+        r = subprocess.run(["docker", "info", "--format", "{{.MemTotal}}"], capture_output=True, timeout=10)
+        return int(r.stdout) / 1024 ** 3 if r.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return None
+
+
+def system_resources() -> Dict[str, Optional[float]]:
+    """CPU count and the memory the containers can use (GB): the smaller of the host's free memory and Docker's, None if neither is known."""
+    known = [m for m in (_proc_mem_available_gb(), docker_memory_gb()) if m is not None]
+    return {"cpus": os.cpu_count(), "mem_available_gb": min(known) if known else None}
 
 
 def suggest_stats_workers(cpus: Optional[int], mem_available_gb: Optional[float]) -> Dict[str, Any]:

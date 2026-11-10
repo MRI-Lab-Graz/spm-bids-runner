@@ -102,7 +102,7 @@ class ProjectConfig:
     actions: List[str] = field(default_factory=lambda: ["smooth", "stats"])
     pilot: bool = False
     skip_validation: bool = True
-    stats_workers: int = 4
+    stats_workers: int = 2  # ~4 GB each; a laptop's Docker VM often has 8 GB. 'Suggest' picks for the machine
     bms_models: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:

@@ -70,7 +70,7 @@ document.getElementById('suggest_workers')?.addEventListener('click', async () =
     try {
         const r = await (await fetch('/api/suggested_workers')).json();
         document.getElementById('stats_workers').value = r.suggested;
-        const mem = r.mem_available_gb ? `, ${Math.round(r.mem_available_gb)} GB free` : '';
+        const mem = r.mem_available_gb ? `, ${Math.round(r.mem_available_gb)} GB for containers` : '';
         hint.textContent = `Suggested ${r.suggested} for this machine (${r.cpus} cores${mem}; about 4 GB per worker on long scans).`;
     } catch (e) {
         hint.textContent = 'Could not read this machine\'s resources.';
