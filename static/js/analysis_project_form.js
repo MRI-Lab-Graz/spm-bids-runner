@@ -20,7 +20,7 @@ function getFullFormData() {
         run_results: document.getElementById('run_results').checked,
         estimation_engine: document.getElementById('estimation_engine').value,
         skip_validation: document.getElementById('skip_validation').checked,
-        stats_workers: Number(document.getElementById('stats_workers')?.value) || 4,
+        stats_workers: Number(document.getElementById('stats_workers')?.value) || 2,
         project_id: currentProjectId || null,
         config_folder: hasProject ? null : document.getElementById('config-folder')?.value,
         study_filename: hasProject ? null : document.getElementById('study-filename')?.value,
@@ -203,7 +203,7 @@ async function saveProjectConfig() {
         spm_standalone_image: unifiedStudyConfig.spm_standalone_image || '',
         actions: Array.from(document.querySelectorAll('input[name="action"]:checked')).map(cb => cb.value),
         pilot: document.getElementById('pilot').checked,
-        stats_workers: Number(document.getElementById('stats_workers')?.value) || 4,
+        stats_workers: Number(document.getElementById('stats_workers')?.value) || 2,
         bms_models: Array.from(document.querySelectorAll('#bms-model-list input')).map(i => i.value.trim()).filter(Boolean),
         skip_validation: document.getElementById('skip_validation').checked
     };

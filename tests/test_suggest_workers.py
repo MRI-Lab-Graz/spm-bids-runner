@@ -66,3 +66,14 @@ class TestMemoryOnMacOs(unittest.TestCase):
         for host, docker, want in ((4.0, 64.0, 4.0), (64.0, 8.0, 8.0), (16.0, None, 16.0), (None, None, None)):
             with patch("lib.utils._proc_mem_available_gb", return_value=host), patch("lib.utils.docker_memory_gb", return_value=docker):
                 self.assertEqual(utils.system_resources()["mem_available_gb"], want)
+
+
+class TestFormDefaultMatchesProjectDefault(unittest.TestCase):
+    def test_html_and_js_fallbacks_use_the_project_default(self):
+        from pathlib import Path
+        from lib.project_manager import ProjectConfig
+        root, n = Path(__file__).resolve().parent.parent, ProjectConfig().stats_workers
+        html = (root / "templates" / "analysis.html").read_text(encoding="utf-8")
+        js = (root / "static" / "js" / "analysis_project_form.js").read_text(encoding="utf-8")
+        self.assertIn(f'id="stats_workers" name="stats_workers" value="{n}"', html)
+        self.assertEqual(js.count(f"stats_workers')?.value) || {n}"), 2)
