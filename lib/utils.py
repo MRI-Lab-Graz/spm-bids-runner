@@ -194,6 +194,13 @@ def check_docker_availability():
 _NOISE = re.compile(r"^\s*$|^warning: function .* shadows a built-in function")
 
 
+HEARTBEAT_SECONDS = 60  # silence before a "still running" line; tests shrink it
+
+
+def fmt_elapsed(seconds: float) -> str:
+    return f"{int(seconds // 60)} min" if seconds >= 60 else f"{int(seconds)} s"
+
+
 def run_command(cmd_list, capture_output=False, failure_markers=()):
     """Run a command; ``failure_markers`` are output strings that make an exit-0 run a failure
     (bidspm's launcher is try/catch + exit, so a caught error still exits 0)."""
@@ -205,8 +212,15 @@ def run_command(cmd_list, capture_output=False, failure_markers=()):
         if not seen:
             seen.extend(m for m in failure_markers if m in line)
 
+    started = time.monotonic()
+
+    def beat(_idle: float) -> None:
+        print(f"⏳ still running, {fmt_elapsed(time.monotonic() - started)} elapsed "
+              "(no output is normal for this step)", flush=True)
+
     result = run_streaming_command(cmd_list, capture_output=capture_output,
-                                   on_output=watch if failure_markers else None)
+                                   on_output=watch if failure_markers else None,
+                                   on_idle=beat, idle_timeout_seconds=HEARTBEAT_SECONDS)
 
     if result.success and seen:
         log_error_non_fatal(f"Command exited 0 but printed '{seen[0]}': {' '.join(cmd_list)}")
