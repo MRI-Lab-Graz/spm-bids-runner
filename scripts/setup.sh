@@ -203,6 +203,17 @@ setup_apptainer_environment() {
     print_status "   Available space: $SPACE"
 }
 
+# Target triple of uv's release asset (uv-<triple>.tar.gz); $1 = uname -s, $2 = uname -m.
+uv_target() {
+    case "$1-$2" in
+        Darwin-arm64)              echo "aarch64-apple-darwin" ;;
+        Darwin-x86_64)             echo "x86_64-apple-darwin" ;;
+        Linux-x86_64)              echo "x86_64-unknown-linux-gnu" ;;
+        Linux-aarch64|Linux-arm64) echo "aarch64-unknown-linux-gnu" ;;
+        *) return 1 ;;
+    esac
+}
+
 # Install system dependencies
 install_uv() {
     print_status "Installing UV package manager locally to repository..."
@@ -220,21 +231,11 @@ install_uv() {
     # Download UV directly to the repository
     print_status "Downloading UV to ./build/ directory..."
 
-    # Detect architecture
-    ARCH=$(uname -m)
-    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-
-    if [ "$ARCH" = "x86_64" ]; then
-        ARCH_NAME="x86_64"
-    elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-        ARCH_NAME="aarch64"
-    else
-        print_error "Unsupported architecture: $ARCH"
+    TARGET=$(uv_target "$(uname -s)" "$(uname -m)") || {
+        print_error "Unsupported platform: $(uname -s) $(uname -m)"
         exit 1
-    fi
-
-    # Download UV binary
-    UV_URL="https://github.com/astral-sh/uv/releases/latest/download/uv-${ARCH_NAME}-unknown-${OS}-gnu.tar.gz"
+    }
+    UV_URL="https://github.com/astral-sh/uv/releases/latest/download/uv-${TARGET}.tar.gz"
 
     cd build
     curl -LsSf "$UV_URL" | tar xz --strip-components=1

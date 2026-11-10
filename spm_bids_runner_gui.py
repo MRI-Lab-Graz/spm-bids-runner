@@ -338,6 +338,15 @@ def _command_of(pid: int) -> str:
         return ''
 
 
+def _program_of(pid: int) -> str:
+    """Executable of a process, without its arguments ('' if unknown): short enough for a message."""
+    try:
+        return subprocess.run(['ps', '-p', str(pid), '-o', 'comm='], capture_output=True, text=True,
+                              check=False).stdout.strip()
+    except Exception:
+        return ''
+
+
 def kill_existing_on_port(port: int) -> bool:
     """Stop an old spm_bids_runner_gui.py instance listening on the port. Returns True if something was stopped.
 
@@ -350,8 +359,12 @@ def kill_existing_on_port(port: int) -> bool:
     for pid in pids:
         command = _command_of(pid)
         if 'spm_bids_runner_gui.py' not in command:
-            print(f"Error: port {port} is held by PID {pid} ({command or 'unknown command'}), which is not a "
-                  f"SPM BIDS Runner GUI, so it was not stopped. Pick another port: --port N (start_gui.sh: SPM_BIDS_RUNNER_PORT=N).")
+            program = os.path.basename(_program_of(pid)) or 'another program'
+            hint = (" If that is VS Code, it is probably forwarding this port from a remote session: remove it in "
+                    "VS Code's Ports tab." if 'code' in program.lower() else "")
+            print(f"Error: port {port} is already used by {program} (PID {pid}), not by SPM BIDS Runner, so it was left "
+                  f"alone.{hint}\nStart on a free port instead:\n    SPM_BIDS_RUNNER_PORT={port + 1} ./scripts/start_gui.sh\n"
+                  f"(or --port {port + 1} when you start spm_bids_runner_gui.py directly)")
             sys.exit(1)
         try:
             os.kill(pid, signal.SIGTERM)
