@@ -57,3 +57,15 @@ class TestMultiArchPublish(unittest.TestCase):
     def test_inputs_reach_scripts_through_env_not_by_interpolation(self):
         for name in ("Smoke test the built image", "Push", "Create the multi-arch tags"):
             self.assertNotIn("${{", _script(name), name)
+
+
+README = (Path(__file__).resolve().parent.parent / "README.md").read_text(encoding="utf-8")
+
+
+class TestPublishingIsDocumented(unittest.TestCase):
+    def test_readme_explains_the_trial_then_real_rollout(self):
+        section = README.split("## Publishing the image (maintainers)", 1)[1].split("\n## ", 1)[0]
+        self.assertIn("latest", section)
+        self.assertIn("-rc1", section)                     # a trial version with `latest` unticked first
+        self.assertIn("smoke", section.lower())
+        self.assertIn("arm64", section)

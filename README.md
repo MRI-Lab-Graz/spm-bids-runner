@@ -133,7 +133,7 @@ container where the actual SPM/Octave analysis runs -- you need both parts. Foll
 ```bash
 git clone https://github.com/MRI-Lab-Graz/spm-bids-runner.git
 cd spm-bids-runner
-# get the image, EITHER pull it from GHCR (once it is published there):
+# get the image, EITHER pull it from GHCR (amd64 and arm64):
 #   docker pull ghcr.io/mri-lab-graz/spm-bids-runner:latest
 # OR build it from this checkout (SPM 26.10.01 is compiled for Octave during the build;
 # versions are build arguments: --build-arg SPM_TAG=26.10.01 --build-arg BIDSPM_TAG=v4.0.0):
@@ -750,6 +750,22 @@ USER neuro
 
 (`copyAtlasToSpmDir` once per atlas you added, at build time: the container later runs as your host uid and cannot
 write to `/opt/spm`.)
+
+## Publishing the image (maintainers)
+
+The image on GHCR is multi-arch (amd64 for the lab server, arm64 for Apple Silicon Macs). It is published by hand:
+GitHub, Actions, "Publish Docker image", Run workflow.
+
+1. **Trial first.** Run it with `version` = `v2.2.0-rc1` (any new version) and `latest` **unticked**. Each architecture is built
+   on its own native runner and smoke-tested (`tests/test_image_smoke.py`) before it is pushed; the multi-arch tag
+   `v2.2.0-rc1` is created only if both pass.
+2. **Check it on an Apple Silicon Mac:** `docker pull ghcr.io/mri-lab-graz/spm-bids-runner:v2.2.0-rc1`, run the smoke test
+   (`SPM_BIDS_RUNNER_TEST_IMAGE=<that tag> python -m pytest -q tests/test_image_smoke.py`) and one real analysis.
+3. **Then publish for real:** run the workflow again with the final version and `latest` **ticked**. `latest` is moved only
+   by a run where both architectures passed.
+
+Old tags (`v2.1.1`, and `latest` until step 3) are amd64 only and stay untouched. arm64 Octave/BLAS results differ from
+amd64 at the floating-point level (about 1e-8), so they are not bit-identical to the lab server.
 
 ## Contributing
 
