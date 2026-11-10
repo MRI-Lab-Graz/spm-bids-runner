@@ -89,6 +89,11 @@ class TestCheckEnvironmentImage(unittest.TestCase):
         out = self._output(False)
         self.assertIn("not on this machine", out)
 
+    def test_reports_docker_not_running_instead_of_a_missing_image(self):
+        out = self._output(None)
+        self.assertIn("Docker Desktop", out)
+        self.assertNotIn("not on this machine", out)
+
     def test_reports_a_present_image(self):
         out = self._output(True)
         self.assertIn("Image", out)
