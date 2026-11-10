@@ -235,9 +235,7 @@ echo "  Project : $PROJECT_ROOT"
 echo "  Python  : $(which python)"
 echo "  Docker  : $(docker --version 2>/dev/null | head -1 || echo 'not found')"
 echo ""
-echo "Run an analysis:     python spm_bids_runner.py --action smooth stats"
-echo "Pilot (1 subject):   python spm_bids_runner.py --action smooth --pilot"
-echo "Web interface:       python spm_bids_runner_gui.py"
+echo "Start the program:   ./scripts/start_gui.sh"
 echo "Deactivate:          deactivate"
 ACTIVATE_EOF
 
@@ -254,10 +252,9 @@ echo -e "${BOLD}═════════════════════�
 echo ""
 echo -e "  Installation path : ${BOLD}${INSTALL_DIR}${NC}"
 echo ""
-echo "  To get started:"
+echo "  To get started (opens the program in your browser):"
 echo "    cd ${INSTALL_DIR}"
-echo "    source .venv/bin/activate"
-echo "    python spm_bids_runner.py --action smooth --pilot"
+echo "    ./scripts/start_gui.sh"
 echo ""
 if ! (command -v docker &>/dev/null && docker info &>/dev/null 2>&1); then
     echo -e "  ${YELLOW}Reminder:${NC} Install and start Docker Desktop, then run:"
