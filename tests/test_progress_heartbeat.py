@@ -70,3 +70,35 @@ class TestSmoothHeartbeat(unittest.TestCase):
     def test_results_are_unchanged(self):
         results, _ = self._run()
         self.assertEqual(results, {"01": {"status": "ok", "message": ""}, "02": {"status": "ok", "message": ""}})
+
+
+import tempfile
+from pathlib import Path
+
+import lib.core as core
+from lib.config import ContainerConfig
+from tests.test_core_helpers import _make_config
+
+
+class TestEstimationNote(unittest.TestCase):
+    def test_stats_step_says_silence_is_normal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            model = root / "model.json"
+            model.write_text("{}", encoding="utf-8")
+            pipeline = core.Pipeline(core.PipelineOptions(actions=["stats"], force=True, dry_run=True))
+            pipeline.config = _make_config(root)
+            pipeline.model_file_path = model
+            pipeline.container_config = ContainerConfig(container_type="docker", docker_image="bidspm/test:latest")
+            pipeline.setup = lambda: True
+            pipeline.get_subjects_to_process = lambda: ["01"]
+            logged = []
+            with patch.object(core.Pipeline, "_log", lambda self, msg: logged.append(msg)), \
+                    patch("lib.core.validate_space_availability", return_value=True), \
+                    patch("lib.core.validate_events_availability", return_value=True), \
+                    patch("lib.core.ensure_derivatives_dataset_description"), \
+                    patch("lib.core.cleanup_tmp_directories"):
+                pipeline.run()
+        note = [m for m in logged if "Estimation is slow" in m]
+        self.assertEqual(len(note), 1)
+        self.assertIn("do not restart Docker", note[0])

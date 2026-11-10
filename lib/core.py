@@ -993,6 +993,8 @@ def _prepare_model_content_for_execution(model_content: Dict[str, Any]) -> List[
 _MAX_BLAS_THREADS = 8
 
 
+_ESTIMATION_NOTE = ("Estimation is slow (about 30 min for a 1000-volume run) and prints nothing while it works. "
+                    "This is normal; please do not restart Docker meanwhile.")
 _BIDSPM_FAILURE_MARKERS = ("ERROR LOG SAVED:",)  # printed when bidspm caught an error (exit code stays 0)
 
 
@@ -1468,6 +1470,7 @@ class Pipeline:
 
         if 'stats' in self.options.actions:
             self._log(f">>> Stats: subject {subject}, task {task}")
+            self._log(_ESTIMATION_NOTE)
             self._copy_brain_mask(subject, task)
             started = time.time() - 1
             if self.options.estimation_engine == "standalone":
