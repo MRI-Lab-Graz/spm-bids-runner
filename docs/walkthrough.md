@@ -38,7 +38,7 @@ Notes from doing it:
 
 ## 2. Create a project
 
-Projects page, "New Project". Fill in the name, the BIDS folder (raw data), the fMRIPrep folder and an output folder.
+Projects page, "New Project". Fill in the name, the BIDS folder (raw data), the fMRIPrep folder and a working directory (where results are written). The screenshot below still says "Output Folder".
 The space is read from the fMRIPrep folder (here MNI152NLin2009cAsym). Leave the container type at Docker and the image
 field empty: the default image is used.
 

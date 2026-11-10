@@ -190,14 +190,14 @@
                             <small class="text-muted">Path to raw BIDS data</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="project-output-folder" class="form-label">Output Folder</label>
+                            <label for="project-output-folder" class="form-label">Working Directory</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="project-output-folder" placeholder="/path/to/output">
                                 <button type="button" class="btn btn-outline-secondary folder-browse-btn" data-target="project-output-folder" title="Browse...">
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">Where to write results</small>
+                            <small class="text-muted">Where everything is written: results, models, logs</small>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -209,7 +209,7 @@
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">Existing preprocessed data (optional)</small>
+                            <small class="text-muted">fMRIPrep output, needed to run an analysis (can be filled in later)</small>
                         </div>
                         <div class="col-md-6">
                             <label for="project-space" class="form-label">Space <span class="space-loader d-none"><i class="fas fa-spinner fa-spin text-muted"></i></span></label>
@@ -234,8 +234,8 @@
                         </div>
                         <div class="col-md-8">
                             <label for="project-container-image" class="form-label">Container Image</label>
-                            <input type="text" class="form-control" id="project-container-image" placeholder="Path to .sif or Docker image name">
-                            <small class="text-muted">Apptainer: path to .sif file | Docker: image name</small>
+                            <input type="text" class="form-control" id="project-container-image" placeholder="Standard image (leave empty)">
+                            <small class="text-muted">Leave empty to use the standard image. Apptainer only: path to a .sif file</small>
                         </div>
                     </div>
                 </form>
@@ -290,14 +290,14 @@
                             <small class="text-muted">Path to raw BIDS data</small>
                         </div>
                         <div class="col-md-6">
-                            <label for="edit-output-folder" class="form-label">Output Folder</label>
+                            <label for="edit-output-folder" class="form-label">Working Directory</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="edit-output-folder" placeholder="/path/to/output">
                                 <button type="button" class="btn btn-outline-secondary folder-browse-btn" data-target="edit-output-folder" title="Browse...">
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">Where to write results</small>
+                            <small class="text-muted">Where everything is written: results, models, logs</small>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -309,7 +309,7 @@
                                     <i class="fas fa-folder-open"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">Existing preprocessed data (optional)</small>
+                            <small class="text-muted">fMRIPrep output, needed to run an analysis (can be filled in later)</small>
                         </div>
                         <div class="col-md-6">
                             <label for="edit-space" class="form-label">Space <span class="edit-space-loader d-none"><i class="fas fa-spinner fa-spin text-muted"></i></span></label>
@@ -334,8 +334,8 @@
                         </div>
                         <div class="col-md-8">
                             <label for="edit-container-image" class="form-label">Container Image</label>
-                            <input type="text" class="form-control" id="edit-container-image" placeholder="Path to .sif or Docker image name">
-                            <small class="text-muted">Apptainer: path to .sif file | Docker: image name</small>
+                            <input type="text" class="form-control" id="edit-container-image" placeholder="Standard image (leave empty)">
+                            <small class="text-muted">Leave empty to use the standard image. Apptainer only: path to a .sif file</small>
                         </div>
                     </div>
                 </form>
