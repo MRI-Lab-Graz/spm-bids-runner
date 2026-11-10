@@ -19,10 +19,22 @@ def test_present_is_docker_image_inspect_with_a_timeout():
     assert cmd == ["docker", "image", "inspect", "img:1"] and kw["timeout"] == 10
 
 
+def _docker_says(stderr):
+    return subprocess.CompletedProcess(["docker"], 1, b"", stderr.encode())
+
+
 def test_absent_image():
-    with patch("lib.preflight.subprocess.run") as run:
-        run.return_value.returncode = 1
+    with patch("lib.preflight.subprocess.run", return_value=_docker_says("Error response from daemon: No such image: img:1")):
         assert docker_image_present("img:1") is False
+
+
+def test_daemon_not_running_is_not_an_absent_image():
+    # Docker Desktop closed: `docker image inspect` also exits 1, but the image may well be there
+    for msg in ("Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?",
+                "failed to connect to the docker API at unix:///x.sock; check if the path is correct and if the daemon is running",
+                "permission denied while trying to connect to the Docker daemon socket"):
+        with patch("lib.preflight.subprocess.run", return_value=_docker_says(msg)):
+            assert docker_image_present("img:1") is None
 
 
 def test_docker_trouble_never_crashes_and_is_not_reported_as_missing():
@@ -45,12 +57,19 @@ def test_no_image_item_when_present_unknown_without_docker_or_not_docker():
     with patch("lib.preflight.shutil.which", return_value="/usr/bin/docker"):
         with patch("lib.preflight._image_present", return_value=True):
             assert check_image("docker", "x") == []
-        with patch("lib.preflight._image_present", return_value=None):
-            assert check_image("docker", "x") == []
     with patch("lib.preflight.shutil.which", return_value=None), \
          patch("lib.preflight._image_present", side_effect=AssertionError("must not run")):
         assert check_image("docker", "x") == []  # the existing 'container' warning covers it
     assert check_image("apptainer", "/x.sif") == [] and check_image("docker", "") == []
+
+
+def test_docker_not_answering_says_start_docker_not_build_the_image():
+    with patch("lib.preflight.shutil.which", return_value="/usr/bin/docker"), \
+         patch("lib.preflight._image_present", return_value=None):
+        items = check_image("docker", "x")
+    assert _ids(items, "error") == ["docker_not_running"]
+    assert "Docker Desktop" in items[0]["fix"]
+    assert "build" not in items[0]["fix"] and "image_missing" not in _ids(items)
 
 
 def test_atlas_missing_for_the_report_action():

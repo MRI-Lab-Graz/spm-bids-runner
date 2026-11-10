@@ -30,10 +30,8 @@ never expose the port.
 
 Notes from doing it:
 
-- `./scripts/setup.sh` rewrites the tracked file `uv.lock` (git shows ` M uv.lock` right after a clean setup). Do not commit
-  it; `git checkout uv.lock` before `git pull`.
-- The start-up pre-flight check covers the program itself, not Docker and not the image. Whether Docker and the image are
-  usable is only reported by the readiness check later (`container` warning, `image_missing`). Check once yourself:
+- The start-up pre-flight check also tells you whether Docker answers and the image is on the machine (a stopped Docker
+  Desktop is reported as "Docker is not answering"). The readiness check repeats it later. Check once yourself:
   `docker images ghcr.io/mri-lab-graz/spm-bids-runner`.
 - The `config/config.json` copy in the README (`cp config/config.example.json config/config.json`) is for command-line use only.
   The GUI did not need it.

@@ -560,11 +560,15 @@ def check_container(container_type):
 
 
 def docker_image_present(image):
-    """True/False from `docker image inspect`; None when docker cannot tell (not running, hung)."""
+    """True/False from `docker image inspect`; None when docker cannot tell (daemon not running, no permission, hung)."""
     try:
-        return subprocess.run(["docker", "image", "inspect", image], capture_output=True, timeout=10).returncode == 0
+        r = subprocess.run(["docker", "image", "inspect", image], capture_output=True, timeout=10)
     except (OSError, subprocess.SubprocessError):
         return None
+    if r.returncode == 0:
+        return True
+    # exit 1 is also what a stopped Docker Desktop gives; only docker's own "No such image" means absent
+    return False if b"no such image" in r.stderr.lower() else None
 
 
 _image_present = docker_image_present  # tests/conftest.py stubs this so no test depends on the host's images
@@ -572,7 +576,13 @@ _image_present = docker_image_present  # tests/conftest.py stubs this so no test
 
 def check_image(container_type, image):
     """A docker run cannot start without its image. Without docker the 'container' warning already covers it."""
-    if container_type != "docker" or not image or not shutil.which("docker") or _image_present(image) is not False:
+    if container_type != "docker" or not image or not shutil.which("docker"):
+        return []
+    present = _image_present(image)
+    if present is None:
+        return [_item("docker_not_running", ERROR, "Docker is not answering, so the image cannot be checked",
+                      "Start Docker Desktop (or the Docker service) and wait until it says it is running, then check again.")]
+    if present:
         return []
     return [_item("image_missing", ERROR, f"Docker image {image} is not on this machine",
                   f"Build it: docker build -f containers/dockerfile/dockerfile -t {image} .  or pull it: docker pull {image}")]

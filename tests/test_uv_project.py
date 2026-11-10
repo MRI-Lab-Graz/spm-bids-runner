@@ -66,6 +66,11 @@ class TestSetupUsesUv(unittest.TestCase):
             self.assertNotIn("requirements.txt", text, script)
             self.assertNotIn("pick_python", text, script)
 
+    def test_setup_scripts_never_rewrite_the_tracked_lock(self):
+        # a plain `uv sync` with a newer uv rewrites uv.lock; the dirty file then blocks the students' `git pull`
+        for script in ("scripts/setup.sh", "scripts/setup_apple_silicon.sh"):
+            self.assertIn("sync --managed-python --frozen", _text(script), script)
+
     def test_no_python_picking_helper_is_left(self):
         self.assertFalse((ROOT / "scripts" / "pick_python.sh").exists())
 

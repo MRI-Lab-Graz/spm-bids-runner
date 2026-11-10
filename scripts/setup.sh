@@ -263,7 +263,7 @@ create_venv() {
 
     # main() runs inside `if main "$@"; then`, which suspends `set -e` for its entire call tree --
     # check the exit status explicitly or a failed install is silently ignored.
-    if ! ./build/uv sync --managed-python; then
+    if ! ./build/uv sync --managed-python --frozen; then
         print_error "uv sync failed (Python download or package install)"
         exit 1
     fi
