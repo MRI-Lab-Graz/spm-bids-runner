@@ -19,8 +19,8 @@ def test_present_is_docker_image_inspect_with_a_timeout():
     assert cmd == ["docker", "image", "inspect", "img:1"] and kw["timeout"] == 10
 
 
-def _docker_says(stderr, returncode=1):
-    return subprocess.CompletedProcess(["docker"], returncode, b"", stderr.encode())
+def _docker_says(stderr):
+    return subprocess.CompletedProcess(["docker"], 1, b"", stderr.encode())
 
 
 def test_absent_image():

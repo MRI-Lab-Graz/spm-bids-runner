@@ -568,7 +568,7 @@ def docker_image_present(image):
     if r.returncode == 0:
         return True
     # exit 1 is also what a stopped Docker Desktop gives; only docker's own "No such image" means absent
-    return False if b"no such image" in (r.stderr or b"").lower() else None
+    return False if b"no such image" in r.stderr.lower() else None
 
 
 _image_present = docker_image_present  # tests/conftest.py stubs this so no test depends on the host's images
