@@ -160,7 +160,7 @@ if [[ -d ".venv" ]]; then
     warn "Existing .venv environment found — recreating."
     rm -rf .venv
 fi
-"$UV_BIN" sync --managed-python || error "uv sync failed — run this script from the repo root."
+"$UV_BIN" sync --managed-python --frozen || error "uv sync failed — run this script from the repo root."
 success "Virtual environment and Python dependencies installed"
 
 # ---------------------------------------------------------------------------
