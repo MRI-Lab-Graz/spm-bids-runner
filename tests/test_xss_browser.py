@@ -123,6 +123,7 @@ class TestHostileTextIsInert(unittest.TestCase):
         page.click(".folder-browse-btn[data-target=project-bids-folder]")
         page.wait_for_function("document.getElementById('folder-selected-path').textContent.endsWith('onerror=\"window.__xss=1\">')")
         self.assertEqual(self.texts(page, "#folder-browse-breadcrumb li")[-1], IMG)
+        page.wait_for_function("document.getAnimations().length === 0")  # Bootstrap ignores a hide during its 300 ms fade-in
         page.click("#folderBrowserModal .btn-secondary[data-bs-dismiss=modal]")  # the open dialog blocks the page behind it
         page.wait_for_selector("#folderBrowserModal", state="hidden")
         page.fill("#project-bids-folder", str(self.browse))
