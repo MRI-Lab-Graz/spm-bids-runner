@@ -433,7 +433,7 @@ Measured on a 32-core machine (study 132, 3 subjects in parallel, stats only): 8
 - **Thread cap per container.** Octave starts one busy-waiting BLAS thread per core, so parallel workers thrashed each other
   (394 s vs 115 s). Each container now gets `OPENBLAS_NUM_THREADS` = cores / workers (max 8).
 - **Parallel subjects.** Heavy first-level estimation is single-core per subject, so a whole study scales by running more
-  subjects at once. The GUI's **Suggest** button proposes a value from your CPU count and free memory (about 4 GB per worker).
+  subjects at once. The GUI's **Suggest** button proposes a value from your CPU count and the memory your containers can use (about 4 GB per worker; on a Mac that is the Docker Desktop memory limit, not the Mac's RAM). New projects start with 2.
 - **SPM Results export is opt-in** (`--results`, or the checkbox in the GUI): it costs about a third of the per-subject time
   on short runs. The `report` action needs it and turns it on automatically.
   It writes csv result tables per contrast (subject and dataset level); no png or montage in this container (no Java, headless SPM).

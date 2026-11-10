@@ -118,7 +118,7 @@ class TestProjectManagerExtra(unittest.TestCase):
 
     def test_run_options_persist_and_old_projects_get_defaults(self):
         project = self.manager.create_project("Options")
-        self.assertEqual((project.config.bms_models, project.config.stats_workers), ([], 4))
+        self.assertEqual((project.config.bms_models, project.config.stats_workers), ([], 2))
         project.config.bms_models = ["/a/model_smdl.json"]
         project.config.stats_workers = 8
         self.assertTrue(self.manager.save_project(project))
@@ -127,7 +127,7 @@ class TestProjectManagerExtra(unittest.TestCase):
         # a config saved before these fields existed still loads
         legacy = {k: v for k, v in reloaded.config.to_dict().items() if k not in ("bms_models", "stats_workers")}
         from lib.project_manager import ProjectConfig
-        self.assertEqual(ProjectConfig.from_dict(legacy).stats_workers, 4)
+        self.assertEqual(ProjectConfig.from_dict(legacy).stats_workers, 2)
 
     def test_import_config_raises_on_malformed_json(self):  # the route turns this into a 400 with the reason
         project = self.manager.create_project("Importer3")
