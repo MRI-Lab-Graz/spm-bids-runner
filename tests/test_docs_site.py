@@ -229,3 +229,17 @@ def test_stats_model_diagram_follows_a_condition_name_to_the_results():
     for label in ("trial_type = faces", "trial_type.faces", "ConditionList", "con_NNNN.nii", "spmT_NNNN.nii", "confounds"):
         assert label in block, label
     assert _in_words("prerequisites/stats-model.md").lstrip().startswith("**In words:**")
+
+
+def test_gears_diagram_uses_the_runners_real_actions(monkeypatch):
+    import spm_bids_runner
+    (block,) = _mermaid_blocks("gears.md")
+    assert block.startswith("flowchart") and _balanced(block)
+    for action in ("smooth", "stats", "dataset", "report"):
+        assert f'"{action}<br/>' in block, action
+        monkeypatch.setattr(sys, "argv", ["spm_bids_runner.py", "--action", action])
+        assert spm_bids_runner.parse_arguments().action == [action]   # SystemExit if the runner no longer has it
+    for label in ("Readiness check", "bidspm-preproc/", "bidspm-stats/", "bidspm-groupStats/", "reports/"):
+        assert label in block, label
+    assert _in_words("gears.md").lstrip().startswith("**In words:**")
+    assert "`bms`" in (SRC / "gears.md").read_text()

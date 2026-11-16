@@ -64,10 +64,33 @@ data and your fMRIPrep folder are never modified.
 
 ## The order of a run
 
+```{mermaid}
+flowchart TD
+    check["Readiness check<br/>reads your data and model, lists what is missing"]
+    smooth["smooth<br/>reads the fMRIPrep BOLD and confounds"]
+    pre[("bidspm-preproc/<br/>BOLD copy, smoothed BOLD, confounds copy")]
+    stats["stats<br/>adds the brain mask, fits the model"]
+    st[("bidspm-stats/<br/>per subject: SPM.mat, con_NNNN.nii, spmT_NNNN.nii")]
+    dataset["dataset<br/>group-level test"]
+    grp[("bidspm-stats/derivatives/<br/>bidspm-groupStats/")]
+    report["report<br/>HTML reports"]
+    rep[("reports/")]
+    check -- "errors block Run in the GUI" --> smooth
+    smooth --> pre --> stats --> st --> dataset --> grp
+    st --> report
+    report --> rep
+```
+
+**In words:** the steps run one after the other, and each reads what an earlier one wrote:
+
 1. **Readiness check**: reads your data and your model and lists what is missing.
 2. **Smooth**: smooths the preprocessed BOLD and copies the confounds into `bidspm-preproc/`.
 3. **Stats**: copies the brain mask into `bidspm-preproc/`, then fits the model for every subject (the slow step; estimation
    is silent for a long time, which is normal; do not restart Docker).
 4. **Dataset**: the group-level test across subjects.
+5. **Report**: reads the per-subject results in `bidspm-stats/` and writes an HTML report for each subject plus an index of all
+   subjects to `reports/`.
+
+A separate action, `bms`, compares competing models; it is not part of a normal run.
 
 Next: the four [prerequisites](prerequisites/index.md), then [install](install.md).
