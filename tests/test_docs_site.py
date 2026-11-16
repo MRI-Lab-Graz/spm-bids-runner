@@ -75,3 +75,19 @@ def test_fmriprep_page_names_what_the_readiness_check_looks_for():
     for needle in ("desc-preproc_bold.nii.gz", "desc-confounds_timeseries.tsv", "desc-brain_mask",
                    "--output-spaces", "bidspm-preproc", "no preprocessing"):
         assert needle in text, needle
+
+
+def test_confounds_page_lists_every_wizard_preset_and_its_columns():
+    from lib.model_wizard import NUISANCE_PRESETS
+    text = (SRC / "prerequisites" / "confounds.md").read_text()
+    for name, columns in NUISANCE_PRESETS.items():
+        assert f"`{name}`" in text, name
+    for column in NUISANCE_PRESETS["motion6_fd"]:           # motion6 + framewise_displacement
+        assert f"`{column}`" in text, column
+    assert "motion24" in text and "derivative1_power2" in text
+
+
+def test_confounds_page_mentions_the_checks_the_readiness_check_makes():
+    text = (SRC / "prerequisites" / "confounds.md").read_text()
+    for needle in ("desc-confounds_timeseries.tsv", "same number of rows", "bidspm-preproc", "without motion regressors"):
+        assert needle in text, needle

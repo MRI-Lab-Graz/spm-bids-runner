@@ -14,4 +14,5 @@ is the most important.
 :maxdepth: 1
 
 fmriprep
+confounds
 ```
