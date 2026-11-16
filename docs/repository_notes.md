@@ -40,7 +40,10 @@ Definition of done for feature work:
 
 A subagent gets a **slice**, never the whole repo, plan or spec: re-reading everything is the main cost of delegated work.
 
-**Model**: every subagent (implementer, reviewer, re-review, final review) runs on `sonnet`, passed explicitly in the dispatch; nobody switches models.
+**Model**: every subagent (implementer, reviewer, re-review, final review) runs on `sonnet`, passed explicitly in the dispatch (an
+omitted model inherits the session's model); nobody switches models. This overrides the tiered model advice of workflow skills
+(cheapest tier for transcription, the most capable model for the final review or for stalled fix rounds): a heavy task, the key
+docs page or the final review stay on `sonnet` too. If a fix loop stalls, start a fresh `sonnet` implementer or ask the user.
 
 **A dispatch contains** (about 15 lines): one line on where the task fits; the path of the **task brief** (the task's own text
 from the plan, with the exact values); interface names/signatures from earlier tasks that the brief cannot know; the path of the
