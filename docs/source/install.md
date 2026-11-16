@@ -2,7 +2,7 @@
 
 ## What you need
 
-- **Docker** (Docker Desktop on a Mac or Windows; on Linux your user must be in the `docker` group), or Apptainer on a cluster.
+- **Docker** (Docker Desktop on a Mac; on Linux your user must be in the `docker` group), or Apptainer on a cluster.
 - About **3.5 GB** of disk for the image and **0.7 GB** for the Python environment.
 - An internet connection for the first setup.
 - A finished fMRIPrep dataset and its BIDS raw data: see the [prerequisites](prerequisites/index.md).
