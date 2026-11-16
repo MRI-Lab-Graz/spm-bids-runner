@@ -98,3 +98,35 @@ def test_events_page_covers_columns_inheritance_and_checks():
     for needle in ("onset", "duration", "trial_type", "task-<task>_events.tsv", "n/a", "tab-separated",
                    "negative onset", "split_by_column"):
         assert needle in text, needle
+
+
+EXAMPLE = SRC / "_examples" / "faces_houses_model.json"
+EXAMPLE_SCAN = {"tasks": ["demo"], "columns": {"trial_type": ["faces", "houses"]}, "numeric": [],
+                "confound_columns": ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]}
+EXAMPLE_CHOICES = {"task": "demo", "name": "faces_houses", "recipes": [], "nuisance": "motion6", "exclude": [],
+                   "contrasts": {"auto": True, "pairs": [{"name": "faces_gt_houses",
+                                                          "positive": ["trial_type.faces"],
+                                                          "negative": ["trial_type.houses"]}]}}
+
+
+def test_example_model_is_what_the_wizard_produces():
+    import json
+    from lib.model_wizard import build_model
+    assert json.loads(EXAMPLE.read_text()) == build_model(EXAMPLE_CHOICES, EXAMPLE_SCAN)["model"]
+
+
+def test_example_model_passes_the_runners_validation():
+    from lib.core import validate_bids_model
+    result = validate_bids_model(EXAMPLE)
+    assert result["valid"], result
+
+
+def test_stats_model_page_includes_the_example_and_every_recipe():
+    from lib.model_wizard import RECIPE_CATALOG
+    text = (SRC / "prerequisites" / "stats-model.md").read_text()
+    assert "_examples/faces_houses_model.json" in text
+    for recipe in RECIPE_CATALOG:
+        assert f"`{recipe['id']}`" in text, recipe["id"]
+    for needle in ("Nodes", "Edges", "ConditionList", "Weights", "DummyContrasts", "MODELS_FILE", "models/",
+                   "BIDS Stats Models", "bidspm.readthedocs.io"):
+        assert needle in text, needle

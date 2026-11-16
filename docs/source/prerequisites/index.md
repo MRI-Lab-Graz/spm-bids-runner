@@ -16,4 +16,5 @@ is the most important.
 fmriprep
 confounds
 events
+stats-model
 ```
