@@ -68,3 +68,10 @@ def test_home_credits_the_engine_and_links_the_credits_page():
     assert "The engine is bidspm" in text
     assert "(credits.md)" in text
     assert "https://bidspm.readthedocs.io/en/latest/" in text
+
+
+def test_fmriprep_page_names_what_the_readiness_check_looks_for():
+    text = (SRC / "prerequisites" / "fmriprep.md").read_text()
+    for needle in ("desc-preproc_bold.nii.gz", "desc-confounds_timeseries.tsv", "desc-brain_mask",
+                   "--output-spaces", "bidspm-preproc", "no preprocessing"):
+        assert needle in text, needle

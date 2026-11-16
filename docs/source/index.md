@@ -14,4 +14,5 @@ Please read [Credits and citing](credits.md) before you publish results.
 :caption: Contents
 
 credits
+prerequisites/index
 ```
