@@ -11,7 +11,7 @@ without writing a script.
 | [bidspm](https://github.com/cpp-lln-lab/bidspm) (CPP Lab, UCLouvain and collaborators) | reads a BIDS dataset and a BIDS Stats Model and runs the first-level, subject-level and group-level analyses with SPM | GPL-3.0 |
 | [SPM](https://www.fil.ion.ucl.ac.uk/spm/) | the statistics: GLM estimation, contrasts, group tests | GPL |
 | [GNU Octave](https://octave.org/) | runs SPM and bidspm in place of MATLAB | GPL |
-| [fMRIPrep](https://fmriprep.org/) | the preprocessing that has to be finished before you start (see the page "fMRIPrep must be finished") | Apache-2.0 |
+| [fMRIPrep](https://fmriprep.org/) | the preprocessing that has to be finished before you start (see [fMRIPrep must be finished](prerequisites/fmriprep.md)) | Apache-2.0 |
 
 The Docker image of this project contains bidspm, SPM and Octave; the exact versions are build arguments in
 `containers/dockerfile/dockerfile` (`BIDSPM_TAG`, `SPM_TAG`).

@@ -27,7 +27,7 @@ That is normal.
 
 Head motion produces signal changes that look like activation. Adding the motion signals to the model as **nuisance
 regressors** removes the part of the signal they explain. In the BIDS Stats Model they are the column names listed after the
-intercept (`1`) in `X`, see The BIDS Stats Model.
+intercept (`1`) in `X`, see [The BIDS Stats Model](stats-model.md).
 
 ## The wizard's presets
 

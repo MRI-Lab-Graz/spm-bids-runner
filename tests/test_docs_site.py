@@ -130,3 +130,36 @@ def test_stats_model_page_includes_the_example_and_every_recipe():
     for needle in ("Nodes", "Edges", "ConditionList", "Weights", "DummyContrasts", "MODELS_FILE", "models/",
                    "BIDS Stats Models", "bidspm.readthedocs.io"):
         assert needle in text, needle
+
+
+def test_prerequisites_are_in_the_order_a_student_meets_them():
+    text = (SRC / "prerequisites" / "index.md").read_text()
+    toctree = re.search(r"```\{toctree\}\n(?::\w+:.*\n)*\n((?:\w[\w-]*\n)+)```", text).group(1).split()
+    assert toctree == ["fmriprep", "confounds", "events", "stats-model"]
+
+
+def test_gears_links_each_prerequisite_and_names_the_folders_the_tool_writes():
+    text = (SRC / "gears.md").read_text()
+    for page in ("fmriprep", "confounds", "events", "stats-model"):
+        assert f"prerequisites/{page}.md" in text, page
+    for needle in ("localhost:5100", "bidspm-preproc", "bidspm-stats", "models/", "~/.spm-bids-runner",
+                   "bidspm-groupStats", "rawdata"):
+        assert needle in text, needle
+
+
+def test_pages_link_to_each_other():
+    expect = {"credits.md": ["prerequisites/fmriprep.md"],
+              "prerequisites/fmriprep.md": ["confounds.md", "../gears.md"],
+              "prerequisites/confounds.md": ["stats-model.md"],
+              "prerequisites/events.md": ["stats-model.md"],
+              "prerequisites/index.md": ["fmriprep.md", "confounds.md", "events.md", "stats-model.md"]}
+    for page, targets in expect.items():
+        text = (SRC / page).read_text()
+        for target in targets:
+            assert f"]({target})" in text, (page, target)
+
+
+def test_fmriprep_page_attributes_the_mask_to_the_statistics_step():
+    text = (SRC / "prerequisites" / "fmriprep.md").read_text()
+    assert "the statistics step adds the brain mask" in text
+    assert "does **not** check the brain mask" in text

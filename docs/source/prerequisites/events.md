@@ -37,7 +37,7 @@ quote its fields.
 - The **model wizard** reads the events of all subjects. The `trial_type` values become the conditions you can keep or
   leave out; the other columns are what recipes work on, for example `split_by_column` splits a condition by
   `response_validity`, `parametric_modulator` uses a numeric column such as `rt`. See
-  The BIDS Stats Model.
+  [The BIDS Stats Model](stats-model.md).
 - The **readiness check** reads them before a run and reports, per subject:
   - no events file for the task;
   - no `onset` or `duration` column, a duplicate column, or a file that is not UTF-8 text;
