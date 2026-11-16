@@ -91,3 +91,10 @@ def test_confounds_page_mentions_the_checks_the_readiness_check_makes():
     text = (SRC / "prerequisites" / "confounds.md").read_text()
     for needle in ("desc-confounds_timeseries.tsv", "same number of rows", "bidspm-preproc", "without motion regressors"):
         assert needle in text, needle
+
+
+def test_events_page_covers_columns_inheritance_and_checks():
+    text = (SRC / "prerequisites" / "events.md").read_text()
+    for needle in ("onset", "duration", "trial_type", "task-<task>_events.tsv", "n/a", "tab-separated",
+                   "negative onset", "split_by_column"):
+        assert needle in text, needle

@@ -15,4 +15,5 @@ is the most important.
 
 fmriprep
 confounds
+events
 ```
