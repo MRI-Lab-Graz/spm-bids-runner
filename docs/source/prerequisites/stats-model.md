@@ -62,13 +62,22 @@ from the group level remove it from that `Filter` and from `DummyContrasts`.
 
 A condition name travels from your data to your results, and every link has to match:
 
-```text
-events file:   trial_type = faces
-model:         trial_type.faces  (in X, HRF.Variables and in a contrast's ConditionList)
-SPM:           a regressor called faces
-contrast:      Name "faces" (or faces_gt_houses)  ->  con_NNNN.nii and spmT_NNNN.nii for each subject
-group:         one result per contrast name
+```{mermaid}
+flowchart LR
+    ev["events file<br/>trial_type = faces"]
+    reg["model: trial_type.faces<br/>in X and HRF.Variables<br/>(SPM calls it faces)"]
+    con["contrast<br/>Name, ConditionList, Weights"]
+    img["per subject<br/>con_NNNN.nii, spmT_NNNN.nii"]
+    grp["group level<br/>one result per contrast"]
+    conf["confounds file<br/>trans_x, rot_x, ..."]
+    ev --> reg --> con --> img --> grp
+    conf -- "nuisance columns in X" --> reg
 ```
+
+**In words:** a value in the `trial_type` column of your events file (for example `faces`) becomes the regressor
+`trial_type.faces` in `X` and in `HRF.Variables`; SPM calls it `faces`. A contrast lists it in its `ConditionList`. Each
+contrast gives `con_NNNN.nii` and `spmT_NNNN.nii` for each subject, and the group level gives one result per contrast. The
+confounds columns join `X` as nuisance regressors but never appear in a contrast.
 
 If you rename a condition in the events file, the model still asks for the old name. For a model **without recipes** (no
 `Transformations` in the Run node), and when the run includes the statistics step, the readiness check reports this before

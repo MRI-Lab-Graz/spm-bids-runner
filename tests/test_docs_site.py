@@ -221,3 +221,11 @@ def test_prerequisites_diagram_shows_how_the_prerequisites_interact():
     for label in ("Raw BIDS dataset", "fMRIPrep", "confounds", "events", "Model wizard", "BIDS Stats Model", "Readiness check"):
         assert label in block, label
     assert _in_words("prerequisites/index.md").lstrip().startswith("**In words:**")
+
+
+def test_stats_model_diagram_follows_a_condition_name_to_the_results():
+    (block,) = _mermaid_blocks("prerequisites/stats-model.md")
+    assert block.startswith("flowchart") and _balanced(block)
+    for label in ("trial_type = faces", "trial_type.faces", "ConditionList", "con_NNNN.nii", "spmT_NNNN.nii", "confounds"):
+        assert label in block, label
+    assert _in_words("prerequisites/stats-model.md").lstrip().startswith("**In words:**")
