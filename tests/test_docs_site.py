@@ -163,3 +163,15 @@ def test_fmriprep_page_attributes_the_mask_to_the_statistics_step():
     text = (SRC / "prerequisites" / "fmriprep.md").read_text()
     assert "the statistics step adds the brain mask" in text
     assert "does **not** check the brain mask" in text
+
+
+def test_install_page_has_the_commands_and_the_port_warning():
+    text = (SRC / "install.md").read_text()
+    for needle in ("git clone https://github.com/MRI-Lab-Graz/spm-bids-runner.git", "./scripts/setup.sh",
+                   "./scripts/start_gui.sh", "http://localhost:5100", "SPM_BIDS_RUNNER_PORT",
+                   "ghcr.io/mri-lab-graz/spm-bids-runner", "never expose"):
+        assert needle in text, needle
+
+
+def test_gears_links_to_the_install_page():
+    assert "](install.md)" in (SRC / "gears.md").read_text()

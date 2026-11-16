@@ -70,4 +70,4 @@ data and your fMRIPrep folder are never modified.
    is silent for a long time, which is normal; do not restart Docker).
 4. **Dataset**: the group-level test across subjects.
 
-Next: the four [prerequisites](prerequisites/index.md), then Install.
+Next: the four [prerequisites](prerequisites/index.md), then [install](install.md).

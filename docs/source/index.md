@@ -16,4 +16,5 @@ Please read [Credits and citing](credits.md) before you publish results.
 credits
 gears
 prerequisites/index
+install
 ```
