@@ -122,9 +122,9 @@ The merge gate from CLAUDE.md applies unchanged: `python -m pytest -q tests`, `/
 
 ## Decisions and ceilings
 
-- **Single dependency list** (`docs/requirements.txt`): the build test skips when those packages are absent, so on a machine
-  without them the gate would not exercise the build. The merge gate installs them first. Upgrade path if it bites: a `docs` dependency
-  group in `pyproject.toml` run with `uv run --group docs`.
+- **Single dependency list** (`docs/requirements.txt`): the build test uses Sphinx from the running interpreter when the docs packages
+  are installed and otherwise runs it through `uv run --no-project --with-requirements docs/requirements.txt`, so the merge gate needs
+  no manual install. It skips only when neither the packages nor uv exist. Ceiling: the first run downloads the packages.
 - **Link, do not copy**, upstream's author list and docs: less to maintain, one source of truth.
 - **No Sphinx autodoc / API pages**: students use the GUI; the CLI is documented in the README.
 - **Accuracy risk** is the gears page and the four prerequisite pages. Folder names, column names, preset contents and the
