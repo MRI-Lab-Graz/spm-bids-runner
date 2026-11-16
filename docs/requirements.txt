@@ -1,3 +1,4 @@
 sphinx>=8
 myst-parser>=4
 shibuya>=2025
+sphinxcontrib-mermaid>=1.0
