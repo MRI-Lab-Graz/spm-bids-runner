@@ -23,7 +23,7 @@ The Docker image of this project contains bidspm, SPM and Octave; the exact vers
 - a **model wizard** that writes a first-level BIDS Stats Model for you;
 - a few **patched bidspm files** (`bidspm_overrides/`), baked into the image, with a note on what is patched and why;
 - a fast Python smoothing step and an optional estimation in SPM's compiled standalone;
-- HTML reports for each subject and for the group.
+- HTML reports for each subject, plus an index of all subjects.
 
 ## How to cite
 

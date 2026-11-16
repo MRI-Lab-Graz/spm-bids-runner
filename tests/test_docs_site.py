@@ -15,9 +15,16 @@ REQS = ROOT / "docs" / "requirements.txt"
 PAGES = sorted(SRC.rglob("*.md"))
 
 
+def _has(module):
+    try:
+        return importlib.util.find_spec(module) is not None
+    except ModuleNotFoundError:  # a missing parent package
+        return False
+
+
 def _sphinx_cmd():
     """Sphinx from this interpreter when the docs packages are installed, else through uv (it installs them for the run)."""
-    if all(importlib.util.find_spec(m) for m in ("sphinx", "myst_parser", "shibuya")):
+    if all(_has(m) for m in ("sphinx", "myst_parser", "shibuya", "sphinxcontrib.mermaid")):
         return [sys.executable, "-m", "sphinx"]
     if shutil.which("uv"):
         return ["uv", "run", "--no-project", "--with-requirements", str(REQS), "python", "-m", "sphinx"]
@@ -191,3 +198,49 @@ RTD_URL = "https://spm-bids-runner.readthedocs.io/"
 def test_readme_links_to_the_docs_site():
     readme = (ROOT / "README.md").read_text()
     assert RTD_URL in readme.split("## Overview")[0], "the docs link belongs right under the title"
+
+
+def _mermaid_blocks(page):
+    """The Mermaid diagram sources of a page (MyST ```{mermaid} fences)."""
+    return re.findall(r"```\{mermaid\}\n(.*?)\n```", (SRC / page).read_text(), re.S)
+
+
+def _balanced(block):
+    """A cheap syntax guard (the real check is the browser): brackets and quotes pair up."""
+    return all(block.count(a) == block.count(b) for a, b in ("[]", "{}", "()")) and block.count('"') % 2 == 0
+
+
+def _in_words(page):
+    """The text after the page's first diagram."""
+    return (SRC / page).read_text().split("```{mermaid}", 1)[1].split("\n```\n", 1)[1]
+
+
+def test_prerequisites_diagram_shows_how_the_prerequisites_interact():
+    (block,) = _mermaid_blocks("prerequisites/index.md")
+    assert block.startswith("flowchart") and _balanced(block)
+    for label in ("Raw BIDS dataset", "fMRIPrep", "confounds", "events", "Model wizard", "BIDS Stats Model", "Readiness check"):
+        assert label in block, label
+    assert _in_words("prerequisites/index.md").lstrip().startswith("**In words:**")
+
+
+def test_stats_model_diagram_follows_a_condition_name_to_the_results():
+    (block,) = _mermaid_blocks("prerequisites/stats-model.md")
+    assert block.startswith("flowchart") and _balanced(block)
+    for label in ("trial_type = faces", "trial_type.faces", "ConditionList", "con_NNNN.nii", "spmT_NNNN.nii", "confounds"):
+        assert label in block, label
+    assert _in_words("prerequisites/stats-model.md").lstrip().startswith("**In words:**")
+
+
+def test_gears_diagram_uses_the_runners_real_actions(monkeypatch):
+    import spm_bids_runner
+    (block,) = _mermaid_blocks("gears.md")
+    assert block.startswith("flowchart") and _balanced(block)
+    for action in ("smooth", "stats", "dataset", "report"):
+        assert f'"{action}<br/>' in block, action
+        monkeypatch.setattr(sys, "argv", ["spm_bids_runner.py", "--action", action])
+        assert spm_bids_runner.parse_arguments().action == [action]   # SystemExit if the runner no longer has it
+    for label in ("Readiness check", "bidspm-preproc/", "bidspm-stats/", "bidspm-groupStats/", "reports/"):
+        assert label in block, label
+    assert _in_words("gears.md").lstrip().startswith("**In words:**")
+    assert "`bms`" in (SRC / "gears.md").read_text()
+    assert "bms" not in block

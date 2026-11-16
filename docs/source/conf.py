@@ -4,7 +4,7 @@ project = "SPM BIDS Runner"
 author = "MRI-Lab-Graz"
 copyright = "2026, MRI-Lab-Graz"
 
-extensions = ["myst_parser"]
+extensions = ["myst_parser", "sphinxcontrib.mermaid"]
 myst_enable_extensions = ["colon_fence"]
 myst_heading_anchors = 3
 
