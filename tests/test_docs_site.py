@@ -175,3 +175,11 @@ def test_install_page_has_the_commands_and_the_port_warning():
 
 def test_gears_links_to_the_install_page():
     assert "](install.md)" in (SRC / "gears.md").read_text()
+
+
+def test_home_page_announces_the_walkthrough():
+    assert "walkthrough" in (SRC / "index.md").read_text().lower()
+
+
+def test_stats_model_page_names_the_parametric_modulator_output():
+    assert "ParametricModulations" in (SRC / "prerequisites" / "stats-model.md").read_text()

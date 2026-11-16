@@ -9,6 +9,8 @@ which drives SPM and GNU Octave. This project adds a runner, a web GUI, a readin
 Please read [Credits and citing](credits.md) before you publish results.
 :::
 
+A step-by-step walkthrough on an open dataset is coming.
+
 ```{toctree}
 :maxdepth: 2
 :caption: Contents

@@ -36,7 +36,7 @@ your computer
 
 ## What the tool creates, and where
 
-Everything is written to your working directory (the **derivatives** folder; it defaults to the working directory). Your raw
+Everything is written to your working directory, which is the **derivatives** folder (by default the working directory). Your raw
 data and your fMRIPrep folder are never modified.
 
 ```text
