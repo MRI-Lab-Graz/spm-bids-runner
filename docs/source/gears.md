@@ -13,7 +13,7 @@ your computer
 ├─ spm-bids-runner/                              the repository you cloned
 │  ├─ spm_bids_runner.py                         the command-line runner: all the real work is triggered here
 │  └─ the GUI, a web page at http://localhost:5100   it only starts runner commands
-└─ ~/.spm-bids-runner/                           your saved projects, logs
+└─ ~/.spm-bids-runner/                           your saved projects (settings)
 ```
 
 - The **image** holds the engine. You pull or build it once (about 3.5 GB). Nothing inside it is yours.
@@ -21,8 +21,9 @@ your computer
   fast smoothing.
 - The **GUI** is only a convenient way to call the runner. By default it listens on your own computer (`127.0.0.1`) and has
   no login: never expose its port.
-- **`~/.spm-bids-runner/`** keeps one folder per project (the settings you entered and the logs). Deleting it removes your
-  projects, never your data.
+- **`~/.spm-bids-runner/`** keeps one folder per project with the settings you entered. The run logs go to the project's output folder (your
+  working directory); only a project without one keeps them here. Deleting `~/.spm-bids-runner/` removes your projects, never
+  your data.
 
 ## What you bring
 
@@ -48,7 +49,7 @@ data and your fMRIPrep folder are never modified.
 │  ├─ reports/ and jobs/                                  bookkeeping and the model's citation text
 │  └─ dataset_description.json
 ├─ reports/                 HTML reports for each subject and for the group
-└─ (logs, run settings, readiness-check results)
+└─ logs/ and options/       the run logs and bidspm's run settings (options_*.json)
 ```
 
 | Thing | Who provides it | Where it lives | What breaks if it is missing |
