@@ -54,3 +54,17 @@ def test_no_lab_study_or_local_paths_in_the_pages():
     pattern = re.compile(r"study 141|\bcrom\b|sub-141|/data/local|/home/mri", re.I)
     hits = [f"{p.relative_to(SRC)}: {m.group()}" for p in PAGES for m in pattern.finditer(p.read_text())]
     assert not hits, hits
+
+
+def test_credits_cite_bidspm_clearly():
+    text = (SRC / "credits.md").read_text()
+    for needle in ("10.5281/zenodo.3554331", "https://github.com/cpp-lln-lab/bidspm",
+                   "https://bidspm.readthedocs.io/en/latest/", "CITATION.cff", "SPM", "Octave"):
+        assert needle in text, needle
+
+
+def test_home_credits_the_engine_and_links_the_credits_page():
+    text = (SRC / "index.md").read_text()
+    assert "The engine is bidspm" in text
+    assert "(credits.md)" in text
+    assert "https://bidspm.readthedocs.io/en/latest/" in text
