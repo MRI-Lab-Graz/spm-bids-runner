@@ -27,9 +27,9 @@ mode is not styled per diagram (default Mermaid theme).
 
 ### The three diagrams
 
-1. **`prerequisites/index.md`: how the prerequisites interact.** Left to right: the raw BIDS dataset with its **events** files; fMRIPrep
+1. **`prerequisites/index.md`: how the prerequisites interact.** Top to bottom: the raw BIDS dataset with its **events** files; fMRIPrep
    (outside this tool) turning raw data into the fMRIPrep output (preprocessed BOLD, **confounds**, brain mask); the **model wizard**
-   reading the events (conditions) and the confounds columns (nuisance presets) and writing the **model JSON**; the **readiness check**
+   reading the events (conditions), offering the nuisance presets (static; it reads the confounds columns only to warn about unknown custom names) and writing the **model JSON**; the **readiness check**
    reading events, fMRIPrep output and model; its verdict gating the run.
 2. **`prerequisites/stats-model.md`: how names flow.** An events value (`trial_type = faces`) becomes the regressor `trial_type.faces`
    in `X` and in `HRF.Variables`, then the contrast (`ConditionList`, `Weights`), then the per-subject images (`con_*`, `spmT_*`), then the

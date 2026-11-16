@@ -77,7 +77,7 @@ flowchart LR
 **In words:** a value in the `trial_type` column of your events file (for example `faces`) becomes the regressor
 `trial_type.faces` in `X` and in `HRF.Variables`; SPM calls it `faces`. A contrast lists it in its `ConditionList`. Each
 contrast gives `con_NNNN.nii` and `spmT_NNNN.nii` for each subject, and the group level gives one result per contrast. The
-confounds columns join `X` as nuisance regressors but never appear in a contrast.
+confounds columns join `X` as nuisance regressors but the wizard never puts them in a contrast.
 
 If you rename a condition in the events file, the model still asks for the old name. For a model **without recipes** (no
 `Transformations` in the Run node), and when the run includes the statistics step, the readiness check reports this before

@@ -48,7 +48,7 @@ data and your fMRIPrep folder are never modified.
 │  ├─ derivatives/bidspm-groupStats/                      group (dataset) level
 │  ├─ reports/ and jobs/                                  bookkeeping and the model's citation text
 │  └─ dataset_description.json
-├─ reports/                 HTML reports for each subject and for the group
+├─ reports/                 HTML reports for each subject, plus an index of all subjects
 └─ logs/ and options/       the run logs and bidspm's run settings (options_*.json)
 ```
 
@@ -81,7 +81,7 @@ flowchart TD
     report --> rep
 ```
 
-**In words:** the steps run one after the other, and each reads what an earlier one wrote:
+**In words:** the steps run in this order, and each reads what an earlier one wrote:
 
 1. **Readiness check**: reads your data and your model and lists what is missing.
 2. **Smooth**: smooths the preprocessed BOLD and copies the confounds into `bidspm-preproc/`.

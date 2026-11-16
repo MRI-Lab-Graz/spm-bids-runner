@@ -243,3 +243,4 @@ def test_gears_diagram_uses_the_runners_real_actions(monkeypatch):
         assert label in block, label
     assert _in_words("gears.md").lstrip().startswith("**In words:**")
     assert "`bms`" in (SRC / "gears.md").read_text()
+    assert "bms" not in block

@@ -21,18 +21,19 @@ flowchart TD
     run["Run:<br/>smooth, stats, dataset"]
     raw --> fmriprep --> out
     raw -- "events: the conditions" --> wizard
-    out -- "confounds: the nuisance columns" --> wizard
+    out -- "confounds: only to check custom nuisance names" --> wizard
     wizard --> model
     raw -- "events" --> check
-    out --> check
+    out -- "BOLD and confounds (the mask is not checked)" --> check
     model --> check
     check -- "errors block Run in the GUI" --> run
 ```
 
 **In words:** the events files belong to the raw dataset. fMRIPrep, which runs before this tool, turns the raw data into the
 fMRIPrep output: the preprocessed BOLD, the confounds file and the brain mask. The model wizard reads the events (the conditions
-you can model) and the confounds columns (the nuisance presets) and writes the BIDS Stats Model. The readiness check then
-compares the events, the fMRIPrep output and the model, and in the GUI its errors block the run.
+you can model), offers the nuisance presets, reads the confounds columns only to warn about custom nuisance names it cannot
+find, and writes the BIDS Stats Model. The readiness check then compares the events, the BOLD and confounds of the fMRIPrep
+output (it does not check the brain mask) and the model, and in the GUI its errors block the run.
 
 ```{toctree}
 :maxdepth: 1
