@@ -244,3 +244,15 @@ def test_gears_diagram_uses_the_runners_real_actions(monkeypatch):
     assert _in_words("gears.md").lstrip().startswith("**In words:**")
     assert "`bms`" in (SRC / "gears.md").read_text()
     assert "bms" not in block
+
+
+def test_home_says_what_the_tool_is_for_and_shows_the_pipeline():
+    text = (SRC / "index.md").read_text()
+    for needle in ("What it is for", "first-level", "group-level", "BIDS Stats Model", "The pipeline at a glance",
+                   "(gears.md)", "(prerequisites/index.md)", "(install.md)"):
+        assert needle in text, needle
+    (block,) = _mermaid_blocks("index.md")
+    assert block.startswith("flowchart") and _balanced(block)
+    for label in ("Readiness check", '["smooth', '["stats', '["dataset', '["report', "fMRIPrep output"):
+        assert label in block, label
+    assert _in_words("index.md").lstrip().startswith("**In words:**")
