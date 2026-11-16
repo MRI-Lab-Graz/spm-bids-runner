@@ -67,9 +67,12 @@ contrast:      Name "faces" (or faces_gt_houses)  ->  con_NNNN.nii and spmT_NNNN
 group:         one result per contrast name
 ```
 
-If you rename a condition in the events file, the model still asks for the old name; the readiness check reports this before
+If you rename a condition in the events file, the model still asks for the old name. For a model **without recipes** (no
+`Transformations` in the Run node), and when the run includes the statistics step, the readiness check reports this before
 the run starts (*"condition '…' is in the model but in none of the … events files"*, or *"has no events for …"* when only some
-subjects lack it). The check reads the conditions from `X`, so keep `X`, `HRF.Variables` and every contrast's `ConditionList` in
+subjects lack it). For a model built with the `valid_only`, `split_by_column` or `merge_rename` recipes the check does not
+compare condition names, so after any rename check the condition names in the events files by hand. The check reads the
+conditions from `X`, so keep `X`, `HRF.Variables` and every contrast's `ConditionList` in
 step by hand: a contrast that still lists a condition you removed from `X` points at nothing.
 
 ## How to make a model
