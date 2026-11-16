@@ -1,5 +1,9 @@
 # SPM BIDS Runner
 
+[![Documentation Status](https://readthedocs.org/projects/spm-bids-runner/badge/?version=latest)](https://spm-bids-runner.readthedocs.io/)
+
+**Documentation for students: <https://spm-bids-runner.readthedocs.io/>** (how the tool is built, what your data must contain, install).
+
 A Python-based tool for running BIDS-StatsModel pipelines via containers (Docker or Apptainer) without requiring MATLAB.
 
 ## Overview

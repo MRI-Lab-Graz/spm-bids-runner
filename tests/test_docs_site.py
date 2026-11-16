@@ -183,3 +183,11 @@ def test_home_page_announces_the_walkthrough():
 
 def test_stats_model_page_names_the_parametric_modulator_output():
     assert "ParametricModulations" in (SRC / "prerequisites" / "stats-model.md").read_text()
+
+
+RTD_URL = "https://spm-bids-runner.readthedocs.io/"
+
+
+def test_readme_links_to_the_docs_site():
+    readme = (ROOT / "README.md").read_text()
+    assert RTD_URL in readme.split("## Overview")[0], "the docs link belongs right under the title"
