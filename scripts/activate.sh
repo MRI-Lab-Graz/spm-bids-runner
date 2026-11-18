@@ -17,13 +17,5 @@ echo "🚀 SPM BIDS Runner environment activated!"
 echo "Project root: $PROJECT_ROOT"
 echo "Python path: $(which python)"
 
-# Apptainer environment variables (respect pre-set values, e.g. on HPC)
-: "${APPTAINER_CACHEDIR:=$PROJECT_ROOT/.apptainer_cache}"
-: "${APPTAINER_TMPDIR:=$PROJECT_ROOT/.apptainer_tmp}"
-export APPTAINER_CACHEDIR
-export APPTAINER_TMPDIR
-export TMPDIR="$APPTAINER_TMPDIR"
-echo "📦 Apptainer cache configured: $APPTAINER_CACHEDIR"
-
 echo ""
 echo "To deactivate, run: deactivate"
